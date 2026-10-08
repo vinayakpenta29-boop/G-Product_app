@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -137,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 if(!s.isEmpty()) sizesArr.put(s);
             }
             if(name.isEmpty() || sizesArr.length() == 0) {
-                Toast.javaToast(this, "Enter name and sizes", Toast.LENGTH_SHORT).show(); // standard Toast
+                Toast.makeText(this, "Enter name and sizes", Toast.LENGTH_SHORT).show();
                 return;
             }
             JSONObject obj = new JSONObject();
@@ -404,7 +406,7 @@ public class MainActivity extends AppCompatActivity {
             String rStr = sp.getString("rates", "{}");
             JSONObject rObj = new JSONObject(rStr);
             ratesMap.clear();
-            java.util.Iterator<String> keys = rObj.keys();
+            Iterator<String> keys = rObj.keys();
             while(keys.hasNext()) {
                 String k = keys.next();
                 ratesMap.put(k, rObj.getJSONObject(k));
