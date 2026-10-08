@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "PriceTagReader"
+rootProject.name = "ProductApp"
 include ':app'
