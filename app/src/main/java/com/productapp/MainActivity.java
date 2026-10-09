@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import org.json.JSONArray;
@@ -19,11 +20,8 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    private LinearLayout layoutHome, layoutProductConfig, layoutProductRates, layoutHistory, layoutSavedBoxes, layoutHistoryBoxes;
-    private EditText etProductName, etBigFrom, etBigTo, etSmallFrom, etSmallTo, etBigRate, etSmallRate;
-    private LinearLayout layoutSizeRows, layoutOrderInputs;
-    private Spinner spinnerHomeProduct, spinnerRateProduct;
-    private ArrayList<EditText> sizeInputList = new ArrayList<>();
+    private LinearLayout layoutSavedBoxes, layoutOrderInputs;
+    private Spinner spinnerHomeProduct;
     
     private ArrayList<JSONObject> productList = new ArrayList<>();
     private HashMap<String, JSONObject> ratesMap = new HashMap<>();
@@ -37,30 +35,10 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        layoutHome = findViewById(R.id.layoutHome);
-        layoutProductConfig = findViewById(R.id.layoutProductConfig);
-        layoutProductRates = findViewById(R.id.layoutProductRates);
-        layoutHistory = findViewById(R.id.layoutHistory);
         layoutSavedBoxes = findViewById(R.id.layoutSavedBoxes);
-        layoutHistoryBoxes = findViewById(R.id.layoutHistoryBoxes);
-        
-        etProductName = findViewById(R.id.etProductName);
-        etBigFrom = findViewById(R.id.etBigFrom);
-        etBigTo = findViewById(R.id.etBigTo);
-        etSmallFrom = findViewById(R.id.etSmallFrom);
-        etSmallTo = findViewById(R.id.etSmallTo);
-        etBigRate = findViewById(R.id.etBigRate);
-        etSmallRate = findViewById(R.id.etSmallRate);
-        
-        layoutSizeRows = findViewById(R.id.layoutSizeRows);
         layoutOrderInputs = findViewById(R.id.layoutOrderInputs);
-        
         spinnerHomeProduct = findViewById(R.id.spinnerHomeProduct);
-        spinnerRateProduct = findViewById(R.id.spinnerRateProduct);
 
-        findViewById(R.id.btnAddSize).setOnClickListener(v -> addSizeInputField(""));
-        findViewById(R.id.btnSaveProduct).setOnClickListener(v -> saveProductData());
-        findViewById(R.id.btnSaveRates).setOnClickListener(v -> saveRateData());
         findViewById(R.id.btnSaveOrder).setOnClickListener(v -> saveOrderData());
 
         spinnerHomeProduct.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -72,28 +50,9 @@ public class MainActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        spinnerRateProduct.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                loadRateHints(position);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
-
-        addSizeInputField("");
         loadDataFromStorage();
         refreshSpinners();
         renderSavedOrders();
-    }
-
-    private void addSizeInputField(String val) {
-        EditText et = new EditText(this);
-        et.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        et.setHint("Enter Size (e.g. S, M, L)");
-        if(!val.isEmpty()) et.setText(val);
-        layoutSizeRows.addView(et);
-        sizeInputList.add(et);
     }
 
     @Override
@@ -105,66 +64,235 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.menu_home) {
-            showSection(layoutHome);
-            return true;
-        } else if (id == R.id.menu_product) {
-            showSection(layoutProductConfig);
+        if (id == R.id.menu_product) {
+            showProductConfigDialog();
             return true;
         } else if (id == R.id.menu_rates) {
-            showSection(layoutProductRates);
-            refreshSpinners();
+            showProductRatesDialog();
             return true;
         } else if (id == R.id.menu_history) {
-            showSection(layoutHistory);
-            renderHistoryOrders();
+            showHistoryDialog();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void showSection(LinearLayout target) {
-    layoutHome.setVisibility(View.GONE);
-    layoutSavedBoxes.setVisibility(View.GONE); // Hide unpaid tables by default
-    layoutProductConfig.setVisibility(View.GONE);
-    layoutProductRates.setVisibility(View.GONE);
-    layoutHistory.setVisibility(View.GONE);
-    
-    target.setVisibility(View.VISIBLE);
-    if(target == layoutHome) {
-        layoutSavedBoxes.setVisibility(View.VISIBLE); // Show unpaid tables ONLY on Home
-        refreshSpinners();
-        renderSavedOrders();
+    private void showProductConfigDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_product_config, null);
+        
+        EditText etProductName = view.findViewById(R.id.etProductName);
+        LinearLayout layoutSizeRows = view.findViewById(R.id.layoutSizeRows);
+        EditText etBigFrom = view.findViewById(R.id.etBigFrom);
+        EditText etBigTo = view.findViewById(R.id.etBigTo);
+        EditText etSmallFrom = view.findViewById(R.id.etSmallFrom);
+        EditText etSmallTo = view.findViewById(R.id.etSmallTo);
+        ArrayList<EditText> dialogSizeList = new ArrayList<>();
+
+        Runnable addSizeRow = () -> {
+            EditText et = new EditText(this);
+            et.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            et.setHint("Enter Size (e.g. S, M, L)");
+            layoutSizeRows.addView(et);
+            dialogSizeList.add(et);
+        };
+
+        addSizeRow.run();
+        view.findViewById(R.id.btnAddSize).setOnClickListener(v -> addSizeRow.run());
+
+        builder.setView(view);
+        AlertDialog dialog = builder.create();
+
+        view.findViewById(R.id.btnSaveProduct).setOnClickListener(v -> {
+            try {
+                String name = etProductName.getText().toString().trim();
+                JSONArray sizesArr = new JSONArray();
+                for(EditText et : dialogSizeList) {
+                    String s = et.getText().toString().trim();
+                    if(!s.isEmpty()) sizesArr.put(s);
+                }
+                if(name.isEmpty() || sizesArr.length() == 0) {
+                    Toast.makeText(this, "Enter name and sizes", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                JSONObject obj = new JSONObject();
+                obj.put("name", name);
+                obj.put("sizes", sizesArr);
+                obj.put("bigFrom", etBigFrom.getText().toString().trim());
+                obj.put("bigTo", etBigTo.getText().toString().trim());
+                obj.put("smallFrom", etSmallFrom.getText().toString().trim());
+                obj.put("smallTo", etSmallTo.getText().toString().trim());
+
+                productList.add(obj);
+                saveDataToStorage();
+                refreshSpinners();
+                Toast.makeText(this, "Product Saved Successfully", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            } catch(Exception e) { e.printStackTrace(); }
+        });
+
+        dialog.show();
     }
-}
 
+    private void showProductRatesDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_product_rates, null);
 
-    private void saveProductData() {
-        try {
-            String name = etProductName.getText().toString().trim();
-            JSONArray sizesArr = new JSONArray();
-            for(EditText et : sizeInputList) {
-                String s = et.getText().toString().trim();
-                if(!s.isEmpty()) sizesArr.put(s);
+        Spinner spinnerRateProduct = view.findViewById(R.id.spinnerRateProduct);
+        TextView tvBigLabel = view.findViewById(R.id.tvBigRateLabel);
+        TextView tvSmallLabel = view.findViewById(R.id.tvSmallRateLabel);
+        EditText etBigRate = view.findViewById(R.id.etBigRate);
+        EditText etSmallRate = view.findViewById(R.id.etSmallRate);
+
+        ArrayList<String> names = new ArrayList<>();
+        names.add("-- Choose Product --");
+        for(JSONObject p : productList) {
+            try { names.add(p.getString("name")); } catch(Exception e) {}
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, names);
+        spinnerRateProduct.setAdapter(adapter);
+
+        spinnerRateProduct.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
+                if(position <= 0 || position > productList.size()) return;
+                try {
+                    JSONObject p = productList.get(position - 1);
+                    tvBigLabel.setText("Big Product Rates (Range: " + p.optString("bigFrom") + " to " + p.optString("bigTo") + ")");
+                    tvSmallLabel.setText("Small Product Rates (Range: " + p.optString("smallFrom") + " to " + p.optString("smallTo") + ")");
+                    
+                    String name = p.getString("name");
+                    if(ratesMap.containsKey(name)) {
+                        JSONObject r = ratesMap.get(name);
+                        etBigRate.setText(r.optString("big", ""));
+                        etSmallRate.setText(r.optString("small", ""));
+                    } else {
+                        etBigRate.setText("");
+                        etSmallRate.setText("");
+                    }
+                } catch(Exception e) { e.printStackTrace(); }
             }
-            if(name.isEmpty() || sizesArr.length() == 0) {
-                Toast.makeText(this, "Enter name and sizes", Toast.LENGTH_SHORT).show();
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        builder.setView(view);
+        AlertDialog dialog = builder.create();
+
+        view.findViewById(R.id.btnSaveRates).setOnClickListener(v -> {
+            int pos = spinnerRateProduct.getSelectedItemPosition();
+            if(pos <= 0) {
+                Toast.makeText(this, "Select a product first", Toast.LENGTH_SHORT).show();
                 return;
             }
-            JSONObject obj = new JSONObject();
-            obj.put("name", name);
-            obj.put("sizes", sizesArr);
-            obj.put("bigFrom", etBigFrom.getText().toString().trim());
-            obj.put("bigTo", etBigTo.getText().toString().trim());
-            obj.put("smallFrom", etSmallFrom.getText().toString().trim());
-            obj.put("smallTo", etSmallTo.getText().toString().trim());
+            try {
+                JSONObject p = productList.get(pos - 1);
+                JSONObject r = new JSONObject();
+                r.put("big", etBigRate.getText().toString().trim());
+                r.put("small", etSmallRate.getText().toString().trim());
+                ratesMap.put(p.getString("name"), r);
+                saveDataToStorage();
+                Toast.makeText(this, "Rates Saved Successfully", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            } catch(Exception e) { e.printStackTrace(); }
+        });
 
-            productList.add(obj);
-            saveDataToStorage();
-            Toast.makeText(this, "Product Saved Successfully", Toast.LENGTH_SHORT).show();
-            etProductName.setText("");
-            showSection(layoutHome);
-        } catch(Exception e) { e.printStackTrace(); }
+        dialog.show();
+    }
+
+    private void showHistoryDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        ScrollView scrollView = new ScrollView(this);
+        LinearLayout layoutHistoryBoxes = new LinearLayout(this);
+        layoutHistoryBoxes.setOrientation(LinearLayout.VERTICAL);
+        layoutHistoryBoxes.setPadding(24, 24, 24, 24);
+        scrollView.addView(layoutHistoryBoxes);
+
+        for(int index = 0; index < orderList.size(); index++) {
+            try {
+                JSONObject order = orderList.get(index);
+                boolean isPaid = order.optBoolean("isPaid", false);
+                if(!isPaid) continue; // Only show paid orders in history
+
+                String pName = order.getString("productName");
+                String date = order.optString("date", "");
+                String paidDate = order.optString("paidDate", "");
+                JSONArray items = order.getJSONArray("items");
+
+                LinearLayout card = new LinearLayout(this);
+                card.setOrientation(LinearLayout.VERTICAL);
+                card.setPadding(16, 16, 16, 16);
+                card.setBackgroundColor(0xFFFFFFFF);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                lp.setMargins(0, 0, 0, 16);
+                card.setLayoutParams(lp);
+
+                TextView tvHeading = new TextView(this);
+                tvHeading.setText(pName);
+                tvHeading.setTextSize(16);
+                tvHeading.setTypeface(null, android.graphics.Typeface.BOLD);
+                tvHeading.setTextColor(0xFF059669);
+                tvHeading.setPadding(0, 0, 0, 4);
+                card.addView(tvHeading);
+
+                TextView tvDates = new TextView(this);
+                tvDates.setText("Created: " + date + " | Paid: " + paidDate);
+                tvDates.setTextSize(12);
+                tvDates.setTextColor(0xFF64748B);
+                tvDates.setPadding(0, 0, 0, 8);
+                card.addView(tvDates);
+
+                TableLayout table = new TableLayout(this);
+                table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+
+                TableRow headerRow = new TableRow(this);
+                headerRow.setBackgroundColor(0xFFE2E8F0);
+                headerRow.addView(makeTableCell("Size", true));
+                headerRow.addView(makeTableCell("Type", true));
+                headerRow.addView(makeTableCell("Qty", true));
+                headerRow.addView(makeTableCell("Rate", true));
+                table.addView(headerRow);
+
+                int totalQty = 0;
+                double totalAmount = 0;
+
+                for(int i = 0; i < items.length(); i++) {
+                    JSONObject item = items.getJSONObject(i);
+                    String size = item.getString("size");
+                    String type = item.getString("type");
+                    int qty = item.getInt("qty");
+                    double rate = item.getDouble("rate");
+                    double amount = qty * rate;
+
+                    totalQty += qty;
+                    totalAmount += amount;
+
+                    TableRow row = new TableRow(this);
+                    row.addView(makeTableCell(size, false));
+                    row.addView(makeTableCell(type, false));
+                    row.addView(makeTableCell(String.valueOf(qty), false));
+                    row.addView(makeTableCell(String.valueOf(amount), false));
+                    table.addView(row);
+                }
+
+                TableRow totalRow = new TableRow(this);
+                totalRow.setBackgroundColor(0xFFF1F5F9);
+                TextView tvTotalLabel = makeTableCell("Total", true);
+                tvTotalLabel.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
+                totalRow.addView(tvTotalLabel);
+                totalRow.addView(makeTableCell(String.valueOf(totalQty), true));
+                totalRow.addView(makeTableCell(String.valueOf(totalAmount), true));
+                table.addView(totalRow);
+
+                card.addView(table);
+                layoutHistoryBoxes.addView(card);
+            } catch(Exception e) { e.printStackTrace(); }
+        }
+
+        builder.setTitle("Paid Orders History");
+        builder.setView(scrollView);
+        builder.setPositiveButton("Close", (dialog, which) -> dialog.dismiss());
+        builder.show();
     }
 
     private void refreshSpinners() {
@@ -175,51 +303,6 @@ public class MainActivity extends AppCompatActivity {
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, names);
         spinnerHomeProduct.setAdapter(adapter);
-        spinnerRateProduct.setAdapter(adapter);
-    }
-
-    private void loadRateHints(int pos) {
-        if(pos <= 0 || pos > productList.size()) return;
-        try {
-            JSONObject p = productList.get(pos - 1);
-            String bFrom = p.getString("bigFrom");
-            String bTo = p.getString("bigTo");
-            String sFrom = p.getString("smallFrom");
-            String sTo = p.getString("smallTo");
-
-            TextView tvBigLabel = findViewById(R.id.tvBigRateLabel);
-            TextView tvSmallLabel = findViewById(R.id.tvSmallRateLabel);
-            tvBigLabel.setText("Big Product Rates (Range: " + bFrom + " to " + bTo + ")");
-            tvSmallLabel.setText("Small Product Rates (Range: " + sFrom + " to " + sTo + ")");
-
-            String name = p.getString("name");
-            if(ratesMap.containsKey(name)) {
-                JSONObject r = ratesMap.get(name);
-                etBigRate.setText(r.optString("big", ""));
-                etSmallRate.setText(r.optString("small", ""));
-            } else {
-                etBigRate.setText("");
-                etSmallRate.setText("");
-            }
-        } catch(Exception e) { e.printStackTrace(); }
-    }
-
-    private void saveRateData() {
-        int pos = spinnerRateProduct.getSelectedItemPosition();
-        if(pos <= 0) {
-            Toast.makeText(this, "Select a product first", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        try {
-            JSONObject p = productList.get(pos - 1);
-            JSONObject r = new JSONObject();
-            r.put("big", etBigRate.getText().toString().trim());
-            r.put("small", etSmallRate.getText().toString().trim());
-            ratesMap.put(p.getString("name"), r);
-            saveDataToStorage();
-            Toast.makeText(this, "Rates Saved Successfully", Toast.LENGTH_SHORT).show();
-            showSection(layoutHome);
-        } catch(Exception e) { e.printStackTrace(); }
     }
 
     private void renderOrderInputs() {
@@ -304,7 +387,7 @@ public class MainActivity extends AppCompatActivity {
                 int qty = qStr.isEmpty() ? 0 : Integer.parseInt(qStr);
                 
                 if(qty > 0) {
-                    String tag = et.getTag().toString(); // size|type|rate
+                    String tag = et.getTag().toString();
                     String[] parts = tag.split("\\|");
                     String size = parts[0];
                     String type = parts[1];
@@ -349,9 +432,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 JSONObject order = orderList.get(oIndex);
                 boolean isPaid = order.optBoolean("isPaid", false);
-                if(isPaid) {
-                    continue; // EXCLUDE PAID TABLES FROM HOME SCREEN
-                }
+                if(isPaid) continue;
 
                 String pName = order.getString("productName");
                 String date = order.optString("date", "");
@@ -365,7 +446,6 @@ public class MainActivity extends AppCompatActivity {
                 lp.setMargins(0, 0, 0, 16);
                 card.setLayoutParams(lp);
 
-                // Header & Date
                 LinearLayout headerLayout = new LinearLayout(this);
                 headerLayout.setOrientation(LinearLayout.HORIZONTAL);
                 headerLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -385,7 +465,6 @@ public class MainActivity extends AppCompatActivity {
                 headerLayout.addView(tvDate);
                 card.addView(headerLayout);
 
-                // Table
                 TableLayout table = new TableLayout(this);
                 table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 table.setPadding(0, 8, 0, 8);
@@ -431,7 +510,6 @@ public class MainActivity extends AppCompatActivity {
 
                 card.addView(table);
 
-                // Paid Checkbox
                 CheckBox cbPaid = new CheckBox(this);
                 cbPaid.setText("Mark as Paid");
                 cbPaid.setTextColor(0xFF059669);
@@ -451,92 +529,6 @@ public class MainActivity extends AppCompatActivity {
                 card.addView(cbPaid);
 
                 layoutSavedBoxes.addView(card);
-            } catch(Exception e) { e.printStackTrace(); }
-        }
-    }
-
-    private void renderHistoryOrders() {
-        layoutHistoryBoxes.removeAllViews();
-        for(int index = 0; index < orderList.size(); index++) {
-            try {
-                JSONObject order = orderList.get(index);
-                boolean isPaid = order.optBoolean("isPaid", false);
-                if(!isPaid) {
-                    continue; // EXCLUDE UNPAID TABLES FROM HISTORY SCREEN
-                }
-
-                String pName = order.getString("productName");
-                String date = order.optString("date", "");
-                String paidDate = order.optString("paidDate", "");
-                JSONArray items = order.getJSONArray("items");
-
-                LinearLayout card = new LinearLayout(this);
-                card.setOrientation(LinearLayout.VERTICAL);
-                card.setPadding(16, 16, 16, 16);
-                card.setBackgroundColor(0xFFFFFFFF);
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                lp.setMargins(0, 0, 0, 16);
-                card.setLayoutParams(lp);
-
-                TextView tvHeading = new TextView(this);
-                tvHeading.setText(pName);
-                tvHeading.setTextSize(16);
-                tvHeading.setTypeface(null, android.graphics.Typeface.BOLD);
-                tvHeading.setTextColor(0xFF059669);
-                tvHeading.setPadding(0, 0, 0, 4);
-                card.addView(tvHeading);
-
-                TextView tvDates = new TextView(this);
-                tvDates.setText("Created: " + date + " | Paid: " + paidDate);
-                tvDates.setTextSize(12);
-                tvDates.setTextColor(0xFF64748B);
-                tvDates.setPadding(0, 0, 0, 8);
-                card.addView(tvDates);
-
-                TableLayout table = new TableLayout(this);
-                table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-
-                TableRow headerRow = new TableRow(this);
-                headerRow.setBackgroundColor(0xFFE2E8F0);
-                headerRow.addView(makeTableCell("Size", true));
-                headerRow.addView(makeTableCell("Type", true));
-                headerRow.addView(makeTableCell("Qty", true));
-                headerRow.addView(makeTableCell("Rate", true));
-                table.addView(headerRow);
-
-                int totalQty = 0;
-                double totalAmount = 0;
-
-                for(int i = 0; i < items.length(); i++) {
-                    JSONObject item = items.getJSONObject(i);
-                    String size = item.getString("size");
-                    String type = item.getString("type");
-                    int qty = item.getInt("qty");
-                    double rate = item.getDouble("rate");
-                    double amount = qty * rate;
-
-                    totalQty += qty;
-                    totalAmount += amount;
-
-                    TableRow row = new TableRow(this);
-                    row.addView(makeTableCell(size, false));
-                    row.addView(makeTableCell(type, false));
-                    row.addView(makeTableCell(String.valueOf(qty), false));
-                    row.addView(makeTableCell(String.valueOf(amount), false));
-                    table.addView(row);
-                }
-
-                TableRow totalRow = new TableRow(this);
-                totalRow.setBackgroundColor(0xFFF1F5F9);
-                TextView tvTotalLabel = makeTableCell("Total", true);
-                tvTotalLabel.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
-                totalRow.addView(tvTotalLabel);
-                totalRow.addView(makeTableCell(String.valueOf(totalQty), true));
-                totalRow.addView(makeTableCell(String.valueOf(totalAmount), true));
-                table.addView(totalRow);
-
-                card.addView(table);
-                layoutHistoryBoxes.addView(card);
             } catch(Exception e) { e.printStackTrace(); }
         }
     }
