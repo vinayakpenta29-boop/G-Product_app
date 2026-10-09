@@ -10,15 +10,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    private LinearLayout layoutHome, layoutProductConfig, layoutProductRates;
+    private LinearLayout layoutHome, layoutProductConfig, layoutProductRates, layoutHistory, layoutSavedBoxes, layoutHistoryBoxes;
     private EditText etProductName, etBigFrom, etBigTo, etSmallFrom, etSmallTo, etBigRate, etSmallRate;
-    private LinearLayout layoutSizeRows, layoutOrderInputs, layoutSavedBoxes;
+    private LinearLayout layoutSizeRows, layoutOrderInputs;
     private Spinner spinnerHomeProduct, spinnerRateProduct;
     private ArrayList<EditText> sizeInputList = new ArrayList<>();
     
@@ -37,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
         layoutHome = findViewById(R.id.layoutHome);
         layoutProductConfig = findViewById(R.id.layoutProductConfig);
         layoutProductRates = findViewById(R.id.layoutProductRates);
+        layoutHistory = findViewById(R.id.layoutHistory);
+        layoutSavedBoxes = findViewById(R.id.layoutSavedBoxes);
+        layoutHistoryBoxes = findViewById(R.id.layoutHistoryBoxes);
         
         etProductName = findViewById(R.id.etProductName);
         etBigFrom = findViewById(R.id.etBigFrom);
@@ -48,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
         
         layoutSizeRows = findViewById(R.id.layoutSizeRows);
         layoutOrderInputs = findViewById(R.id.layoutOrderInputs);
-        layoutSavedBoxes = findViewById(R.id.layoutSavedBoxes);
         
         spinnerHomeProduct = findViewById(R.id.spinnerHomeProduct);
         spinnerRateProduct = findViewById(R.id.spinnerRateProduct);
@@ -107,6 +112,10 @@ public class MainActivity extends AppCompatActivity {
             showSection(layoutProductRates);
             refreshSpinners();
             return true;
+        } else if (id == R.id.menu_history) {
+            showSection(layoutHistory);
+            renderHistoryOrders();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -115,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
         layoutHome.setVisibility(View.GONE);
         layoutProductConfig.setVisibility(View.GONE);
         layoutProductRates.setVisibility(View.GONE);
+        layoutHistory.setVisibility(View.GONE);
         target.setVisibility(View.VISIBLE);
         if(target == layoutHome) {
             refreshSpinners();
@@ -307,9 +317,14 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
+            String currentDate = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
+
             JSONObject order = new JSONObject();
             order.put("productName", pName);
             order.put("items", items);
+            order.put("date", currentDate);
+            order.put("isPaid", false);
+            order.put("paidDate", "");
             orderList.add(order);
             saveDataToStorage();
 
@@ -322,9 +337,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void renderSavedOrders() {
         layoutSavedBoxes.removeAllViews();
-        for(JSONObject order : orderList) {
+        for(int index = 0; index < orderList.size(); index++) {
+            final int oIndex = index;
             try {
+                JSONObject order = orderList.get(oIndex);
+                boolean isPaid = order.optBoolean("isPaid", false);
+                if(isPaid) continue; // Skip paid orders on home screen
+
                 String pName = order.getString("productName");
+                String date = order.optString("date", "");
                 JSONArray items = order.getJSONArray("items");
 
                 LinearLayout card = new LinearLayout(this);
@@ -335,20 +356,33 @@ public class MainActivity extends AppCompatActivity {
                 lp.setMargins(0, 0, 0, 16);
                 card.setLayoutParams(lp);
 
+                // Header & Date
+                LinearLayout headerLayout = new LinearLayout(this);
+                headerLayout.setOrientation(LinearLayout.HORIZONTAL);
+                headerLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
                 TextView tvHeading = new TextView(this);
                 tvHeading.setText(pName);
                 tvHeading.setTextSize(16);
                 tvHeading.setTypeface(null, android.graphics.Typeface.BOLD);
-                tvHeading.setTextColor(0xFF2563EB);
-                tvHeading.setPadding(0, 0, 0, 8);
-                card.addView(tvHeading);
+                tvHeading.setTextColor(0xFF4F46E5);
+                tvHeading.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+                headerLayout.addView(tvHeading);
 
+                TextView tvDate = new TextView(this);
+                tvDate.setText("Created: " + date);
+                tvDate.setTextSize(11);
+                tvDate.setTextColor(0xFF64748B);
+                headerLayout.addView(tvDate);
+                card.addView(headerLayout);
+
+                // Table
                 TableLayout table = new TableLayout(this);
                 table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                table.setPadding(0, 8, 0, 8);
 
-                // Header Row
                 TableRow headerRow = new TableRow(this);
-                headerRow.setBackgroundColor(0xFFE5E7EB);
+                headerRow.setBackgroundColor(0xFFE2E8F0);
                 headerRow.addView(makeTableCell("Size", true));
                 headerRow.addView(makeTableCell("Type", true));
                 headerRow.addView(makeTableCell("Qty", true));
@@ -377,9 +411,8 @@ public class MainActivity extends AppCompatActivity {
                     table.addView(row);
                 }
 
-                // Total Row
                 TableRow totalRow = new TableRow(this);
-                totalRow.setBackgroundColor(0xFFF3F4F6);
+                totalRow.setBackgroundColor(0xFFF1F5F9);
                 TextView tvTotalLabel = makeTableCell("Total", true);
                 tvTotalLabel.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
                 totalRow.addView(tvTotalLabel);
@@ -388,7 +421,111 @@ public class MainActivity extends AppCompatActivity {
                 table.addView(totalRow);
 
                 card.addView(table);
+
+                // Paid Checkbox
+                CheckBox cbPaid = new CheckBox(this);
+                cbPaid.setText("Mark as Paid");
+                cbPaid.setTextColor(0xFF059669);
+                cbPaid.setTypeface(null, android.graphics.Typeface.BOLD);
+                cbPaid.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    if(isChecked) {
+                        try {
+                            String paidDateStr = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
+                            order.put("isPaid", true);
+                            order.put("paidDate", paidDateStr);
+                            saveDataToStorage();
+                            Toast.makeText(this, "Moved to History!", Toast.LENGTH_SHORT).show();
+                            renderSavedOrders();
+                        } catch(Exception e) { e.printStackTrace(); }
+                    }
+                });
+                card.addView(cbPaid);
+
                 layoutSavedBoxes.addView(card);
+            } catch(Exception e) { e.printStackTrace(); }
+        }
+    }
+
+    private void renderHistoryOrders() {
+        layoutHistoryBoxes.removeAllViews();
+        for(int index = 0; index < orderList.size(); index++) {
+            try {
+                JSONObject order = orderList.get(index);
+                boolean isPaid = order.optBoolean("isPaid", false);
+                if(!isPaid) continue; // Only show paid orders in history
+
+                String pName = order.getString("productName");
+                String date = order.optString("date", "");
+                String paidDate = order.optString("paidDate", "");
+                JSONArray items = order.getJSONArray("items");
+
+                LinearLayout card = new LinearLayout(this);
+                card.setOrientation(LinearLayout.VERTICAL);
+                card.setPadding(16, 16, 16, 16);
+                card.setBackgroundColor(0xFFFFFFFF);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                lp.setMargins(0, 0, 0, 16);
+                card.setLayoutParams(lp);
+
+                TextView tvHeading = new TextView(this);
+                tvHeading.setText(pName);
+                tvHeading.setTextSize(16);
+                tvHeading.setTypeface(null, android.graphics.Typeface.BOLD);
+                tvHeading.setTextColor(0xFF059669);
+                tvHeading.setPadding(0, 0, 0, 4);
+                card.addView(tvHeading);
+
+                TextView tvDates = new TextView(this);
+                tvDates.setText("Created: " + date + " | Paid: " + paidDate);
+                tvDates.setTextSize(12);
+                tvDates.setTextColor(0xFF64748B);
+                tvDates.setPadding(0, 0, 0, 8);
+                card.addView(tvDates);
+
+                TableLayout table = new TableLayout(this);
+                table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+
+                TableRow headerRow = new TableRow(this);
+                headerRow.setBackgroundColor(0xFFE2E8F0);
+                headerRow.addView(makeTableCell("Size", true));
+                headerRow.addView(makeTableCell("Type", true));
+                headerRow.addView(makeTableCell("Qty", true));
+                headerRow.addView(makeTableCell("Rate", true));
+                table.addView(headerRow);
+
+                int totalQty = 0;
+                double totalAmount = 0;
+
+                for(int i = 0; i < items.length(); i++) {
+                    JSONObject item = items.getJSONObject(i);
+                    String size = item.getString("size");
+                    String type = item.getString("type");
+                    int qty = item.getInt("qty");
+                    double rate = item.getDouble("rate");
+                    double amount = qty * rate;
+
+                    totalQty += qty;
+                    totalAmount += amount;
+
+                    TableRow row = new TableRow(this);
+                    row.addView(makeTableCell(size, false));
+                    row.addView(makeTableCell(type, false));
+                    row.addView(makeTableCell(String.valueOf(qty), false));
+                    row.addView(makeTableCell(String.valueOf(amount), false));
+                    table.addView(row);
+                }
+
+                TableRow totalRow = new TableRow(this);
+                totalRow.setBackgroundColor(0xFFF1F5F9);
+                TextView tvTotalLabel = makeTableCell("Total", true);
+                tvTotalLabel.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
+                totalRow.addView(tvTotalLabel);
+                totalRow.addView(makeTableCell(String.valueOf(totalQty), true));
+                totalRow.addView(makeTableCell(String.valueOf(totalAmount), true));
+                table.addView(totalRow);
+
+                card.addView(table);
+                layoutHistoryBoxes.addView(card);
             } catch(Exception e) { e.printStackTrace(); }
         }
     }
