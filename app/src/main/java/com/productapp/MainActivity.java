@@ -124,16 +124,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showSection(LinearLayout target) {
-        layoutHome.setVisibility(View.GONE);
-        layoutProductConfig.setVisibility(View.GONE);
-        layoutProductRates.setVisibility(View.GONE);
-        layoutHistory.setVisibility(View.GONE);
-        target.setVisibility(View.VISIBLE);
-        if(target == layoutHome) {
-            refreshSpinners();
-            renderSavedOrders();
-        }
+    layoutHome.setVisibility(View.GONE);
+    layoutSavedBoxes.setVisibility(View.GONE); // Hide unpaid tables by default
+    layoutProductConfig.setVisibility(View.GONE);
+    layoutProductRates.setVisibility(View.GONE);
+    layoutHistory.setVisibility(View.GONE);
+    
+    target.setVisibility(View.VISIBLE);
+    if(target == layoutHome) {
+        layoutSavedBoxes.setVisibility(View.VISIBLE); // Show unpaid tables ONLY on Home
+        refreshSpinners();
+        renderSavedOrders();
     }
+}
+
 
     private void saveProductData() {
         try {
