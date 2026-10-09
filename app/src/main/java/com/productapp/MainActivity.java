@@ -6,13 +6,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,33 +29,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // --- GLOBAL CRASH HANDLER ---
-        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-            StringWriter sw = new StringWriter();
-            throwable.printStackTrace(new PrintWriter(sw));
-            String stackTrace = sw.toString();
-
-            SharedPreferences sp = getSharedPreferences("crash_prefs", MODE_PRIVATE);
-            sp.edit().putString("last_crash", stackTrace).apply();
-
-            android.os.Process.killProcess(android.os.Process.myPid());
-            System.exit(1);
-        });
-
         setContentView(R.layout.activity_main);
-
-        // Check if a previous crash occurred and show it
-        SharedPreferences sp = getSharedPreferences("crash_prefs", MODE_PRIVATE);
-        String crashLog = sp.getString("last_crash", null);
-        if (crashLog != null) {
-            sp.edit().remove("last_crash").apply();
-            new AlertDialog.Builder(this)
-                .setTitle("App Crash Detected")
-                .setMessage(crashLog)
-                .setPositiveButton("OK", null)
-                .show();
-        }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
