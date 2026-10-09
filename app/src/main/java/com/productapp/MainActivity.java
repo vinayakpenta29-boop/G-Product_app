@@ -1,6 +1,8 @@
 package com.productapp;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,6 +11,7 @@ import android.widget.*;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import com.google.android.material.card.MaterialCardView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.text.SimpleDateFormat;
@@ -84,6 +87,11 @@ public class MainActivity extends AppCompatActivity {
     private void showProductConfigDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View view = getLayoutInflater().inflate(R.layout.dialog_product_config, null);
+        builder.setView(view);
+        AlertDialog dialog = builder.create();
+        if(dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
         
         EditText etProductName = view.findViewById(R.id.etProductName);
         LinearLayout layoutSizeRows = view.findViewById(R.id.layoutSizeRows);
@@ -95,17 +103,18 @@ public class MainActivity extends AppCompatActivity {
 
         Runnable addSizeRow = () -> {
             EditText et = new EditText(this);
-            et.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 48 * getResources().getDisplayMetrics().density);
+            lp.setMargins(0, 0, 0, 8);
+            et.setLayoutParams(lp);
             et.setHint("Enter Size (e.g. S, M, L)");
+            et.setPadding(12, 0, 12, 0);
+            et.setBackgroundResource(R.drawable.bg_rounded_edittext);
             layoutSizeRows.addView(et);
             dialogSizeList.add(et);
         };
 
         addSizeRow.run();
         view.findViewById(R.id.btnAddSize).setOnClickListener(v -> addSizeRow.run());
-
-        builder.setView(view);
-        AlertDialog dialog = builder.create();
 
         view.findViewById(R.id.btnSaveProduct).setOnClickListener(v -> {
             try {
@@ -141,6 +150,11 @@ public class MainActivity extends AppCompatActivity {
     private void showProductRatesDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View view = getLayoutInflater().inflate(R.layout.dialog_product_rates, null);
+        builder.setView(view);
+        AlertDialog dialog = builder.create();
+        if(dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
 
         Spinner spinnerRateProduct = view.findViewById(R.id.spinnerRateProduct);
         TextView tvBigLabel = view.findViewById(R.id.tvBigRateLabel);
@@ -180,9 +194,6 @@ public class MainActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        builder.setView(view);
-        AlertDialog dialog = builder.create();
-
         view.findViewById(R.id.btnSaveRates).setOnClickListener(v -> {
             int pos = spinnerRateProduct.getSelectedItemPosition();
             if(pos <= 0) {
@@ -207,9 +218,9 @@ public class MainActivity extends AppCompatActivity {
     private void showHistoryDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         ScrollView scrollView = new ScrollView(this);
+        scrollView.setPadding(20, 20, 20, 20);
         LinearLayout layoutHistoryBoxes = new LinearLayout(this);
         layoutHistoryBoxes.setOrientation(LinearLayout.VERTICAL);
-        layoutHistoryBoxes.setPadding(24, 24, 24, 24);
         scrollView.addView(layoutHistoryBoxes);
 
         for(int index = 0; index < orderList.size(); index++) {
@@ -223,34 +234,40 @@ public class MainActivity extends AppCompatActivity {
                 String paidDate = order.optString("paidDate", "");
                 JSONArray items = order.getJSONArray("items");
 
-                LinearLayout card = new LinearLayout(this);
-                card.setOrientation(LinearLayout.VERTICAL);
-                card.setPadding(16, 16, 16, 16);
-                card.setBackgroundColor(0xFFFFFFFF);
+                MaterialCardView card = new MaterialCardView(this);
+                card.setRadius(16f);
+                card.setCardElevation(4f);
+                card.setStrokeWidth(1);
+                card.setStrokeColor(Color.parseColor("#E2E8F0"));
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 lp.setMargins(0, 0, 0, 16);
                 card.setLayoutParams(lp);
+
+                LinearLayout cardInner = new LinearLayout(this);
+                cardInner.setOrientation(LinearLayout.VERTICAL);
+                cardInner.setPadding(16, 16, 16, 16);
+                cardInner.setBackgroundColor(Color.WHITE);
 
                 TextView tvHeading = new TextView(this);
                 tvHeading.setText(pName);
                 tvHeading.setTextSize(16);
                 tvHeading.setTypeface(null, android.graphics.Typeface.BOLD);
-                tvHeading.setTextColor(0xFF059669);
+                tvHeading.setTextColor(Color.parseColor("#059669"));
                 tvHeading.setPadding(0, 0, 0, 4);
-                card.addView(tvHeading);
+                cardInner.addView(tvHeading);
 
                 TextView tvDates = new TextView(this);
                 tvDates.setText("Created: " + date + " | Paid: " + paidDate);
-                tvDates.setTextSize(12);
-                tvDates.setTextColor(0xFF64748B);
+                tvDates.setTextSize(11);
+                tvDates.setTextColor(Color.parseColor("#64748B"));
                 tvDates.setPadding(0, 0, 0, 8);
-                card.addView(tvDates);
+                cardInner.addView(tvDates);
 
                 TableLayout table = new TableLayout(this);
                 table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
 
                 TableRow headerRow = new TableRow(this);
-                headerRow.setBackgroundColor(0xFFE2E8F0);
+                headerRow.setBackgroundColor(Color.parseColor("#E2E8F0"));
                 headerRow.addView(makeTableCell("Size", true));
                 headerRow.addView(makeTableCell("Type", true));
                 headerRow.addView(makeTableCell("Qty", true));
@@ -280,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 TableRow totalRow = new TableRow(this);
-                totalRow.setBackgroundColor(0xFFF1F5F9);
+                totalRow.setBackgroundColor(Color.parseColor("#F1F5F9"));
                 TextView tvTotalLabel = makeTableCell("Total", true);
                 tvTotalLabel.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
                 totalRow.addView(tvTotalLabel);
@@ -288,7 +305,8 @@ public class MainActivity extends AppCompatActivity {
                 totalRow.addView(makeTableCell(String.valueOf(totalAmount), true));
                 table.addView(totalRow);
 
-                card.addView(table);
+                cardInner.addView(table);
+                card.addView(cardInner);
                 layoutHistoryBoxes.addView(card);
             } catch(Exception e) { e.printStackTrace(); }
         }
@@ -296,7 +314,11 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle("Paid Orders History");
         builder.setView(scrollView);
         builder.setPositiveButton("Close", (dialog, which) -> dialog.dismiss());
-        builder.show();
+        AlertDialog dialog = builder.create();
+        if(dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+        dialog.show();
     }
 
     private void refreshSpinners() {
@@ -338,17 +360,21 @@ public class MainActivity extends AppCompatActivity {
 
                 LinearLayout row = new LinearLayout(this);
                 row.setOrientation(LinearLayout.HORIZONTAL);
-                row.setPadding(0, 4, 0, 4);
+                row.setPadding(0, 6, 0, 6);
+                row.setGravity(android.view.Gravity.CENTER_VERTICAL);
 
                 TextView tv = new TextView(this);
                 tv.setText("Size: " + size + " (" + type + ") - Rate: " + rate);
+                tv.setTextColor(Color.parseColor("#334155"));
                 tv.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
 
                 EditText et = new EditText(this);
-                et.setHint("Enter Qty");
+                et.setHint("Qty");
                 et.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+                et.setPadding(12, 10, 12, 10);
+                et.setBackgroundResource(R.drawable.bg_rounded_edittext);
                 et.setTag(size + "|" + type + "|" + rate);
-                et.setLayoutParams(new LinearLayout.LayoutParams(250, LinearLayout.LayoutParams.WRAP_CONTENT));
+                et.setLayoutParams(new LinearLayout.LayoutParams(220, 48 * (int)getResources().getDisplayMetrics().density));
 
                 row.addView(tv);
                 row.addView(et);
@@ -446,13 +472,19 @@ public class MainActivity extends AppCompatActivity {
                 String date = order.optString("date", "");
                 JSONArray items = order.getJSONArray("items");
 
-                LinearLayout card = new LinearLayout(this);
-                card.setOrientation(LinearLayout.VERTICAL);
-                card.setPadding(16, 16, 16, 16);
-                card.setBackgroundColor(0xFFFFFFFF);
+                MaterialCardView card = new MaterialCardView(this);
+                card.setRadius(16f);
+                card.setCardElevation(4f);
+                card.setStrokeWidth(1);
+                card.setStrokeColor(Color.parseColor("#E2E8F0"));
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 lp.setMargins(0, 0, 0, 16);
                 card.setLayoutParams(lp);
+
+                LinearLayout cardInner = new LinearLayout(this);
+                cardInner.setOrientation(LinearLayout.VERTICAL);
+                cardInner.setPadding(18, 18, 18, 18);
+                cardInner.setBackgroundColor(Color.WHITE);
 
                 LinearLayout headerLayout = new LinearLayout(this);
                 headerLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -462,23 +494,23 @@ public class MainActivity extends AppCompatActivity {
                 tvHeading.setText(pName);
                 tvHeading.setTextSize(16);
                 tvHeading.setTypeface(null, android.graphics.Typeface.BOLD);
-                tvHeading.setTextColor(0xFF4F46E5);
+                tvHeading.setTextColor(Color.parseColor("#4F46E5"));
                 tvHeading.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
                 headerLayout.addView(tvHeading);
 
                 TextView tvDate = new TextView(this);
                 tvDate.setText("Created: " + date);
                 tvDate.setTextSize(11);
-                tvDate.setTextColor(0xFF64748B);
+                tvDate.setTextColor(Color.parseColor("#64748B"));
                 headerLayout.addView(tvDate);
-                card.addView(headerLayout);
+                cardInner.addView(headerLayout);
 
                 TableLayout table = new TableLayout(this);
                 table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 table.setPadding(0, 8, 0, 8);
 
                 TableRow headerRow = new TableRow(this);
-                headerRow.setBackgroundColor(0xFFE2E8F0);
+                headerRow.setBackgroundColor(Color.parseColor("#E2E8F0"));
                 headerRow.addView(makeTableCell("Size", true));
                 headerRow.addView(makeTableCell("Type", true));
                 headerRow.addView(makeTableCell("Qty", true));
@@ -507,12 +539,11 @@ public class MainActivity extends AppCompatActivity {
                     table.addView(row);
                 }
 
-                // Add to grand totals
                 grandTotalQty += totalQty;
                 grandTotalAmount += totalAmount;
 
                 TableRow totalRow = new TableRow(this);
-                totalRow.setBackgroundColor(0xFFF1F5F9);
+                totalRow.setBackgroundColor(Color.parseColor("#F1F5F9"));
                 TextView tvTotalLabel = makeTableCell("Total", true);
                 tvTotalLabel.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
                 totalRow.addView(tvTotalLabel);
@@ -520,11 +551,11 @@ public class MainActivity extends AppCompatActivity {
                 totalRow.addView(makeTableCell(String.valueOf(totalAmount), true));
                 table.addView(totalRow);
 
-                card.addView(table);
+                cardInner.addView(table);
 
                 CheckBox cbPaid = new CheckBox(this);
                 cbPaid.setText("Mark as Paid");
-                cbPaid.setTextColor(0xFF059669);
+                cbPaid.setTextColor(Color.parseColor("#059669"));
                 cbPaid.setTypeface(null, android.graphics.Typeface.BOLD);
                 cbPaid.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     if(isChecked) {
@@ -538,13 +569,13 @@ public class MainActivity extends AppCompatActivity {
                         } catch(Exception e) { e.printStackTrace(); }
                     }
                 });
-                card.addView(cbPaid);
+                cardInner.addView(cbPaid);
 
+                card.addView(cardInner);
                 layoutSavedBoxes.addView(card);
             } catch(Exception e) { e.printStackTrace(); }
         }
 
-        // Update the summary dashboard card
         if(tvSummaryTotalQty != null && tvSummaryTotalAmount != null) {
             tvSummaryTotalQty.setText(String.valueOf(grandTotalQty));
             tvSummaryTotalAmount.setText(String.valueOf(grandTotalAmount));
@@ -554,8 +585,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView makeTableCell(String text, boolean isHeader) {
         TextView tv = new TextView(this);
         tv.setText(text);
-        tv.setPadding(8, 8, 8, 8);
-        if(isHeader) tv.setTypeface(null, android.graphics.Typeface.BOLD);
+        tv.setPadding(10, 10, 10, 10);
+        tv.setTextColor(Color.parseColor("#1E293B"));
+        if(isHeader) {
+            tv.setTypeface(null, android.graphics.Typeface.BOLD);
+            tv.setTextColor(Color.parseColor("#0F172A"));
+        }
         return tv;
     }
 
