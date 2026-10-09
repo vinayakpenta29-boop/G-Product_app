@@ -266,18 +266,29 @@ public class MainActivity extends AppCompatActivity {
                 tvDates.setPadding(0, 0, 0, 12);
                 cardInner.addView(tvDates);
 
+                // Rounded Table Wrapper Container
+                LinearLayout tableContainer = new LinearLayout(this);
+                tableContainer.setOrientation(LinearLayout.VERTICAL);
+                GradientDrawable containerBg = new GradientDrawable();
+                containerBg.setShape(GradientDrawable.RECTANGLE);
+                containerBg.setCornerRadius(14f);
+                containerBg.setColor(Color.WHITE);
+                containerBg.setStroke(1, Color.parseColor("#CBD5E1"));
+                tableContainer.setBackground(containerBg);
+                tableContainer.setClipToOutline(true);
+
                 TableLayout table = new TableLayout(this);
                 table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 table.setStretchAllColumns(true);
 
-                // Header Row
+                // Header Row (Soft Light Blue Background matching reference image)
                 TableRow headerRow = new TableRow(this);
-                headerRow.setBackgroundColor(Color.parseColor("#4F46E5"));
-                headerRow.setPadding(0, 10, 0, 10);
-                headerRow.addView(makeTableCell("Size", true, Gravity.START));
-                headerRow.addView(makeTableCell("Type", true, Gravity.START));
-                headerRow.addView(makeTableCell("Qty", true, Gravity.END));
-                headerRow.addView(makeTableCell("Amount", true, Gravity.END));
+                headerRow.setBackgroundColor(Color.parseColor("#E0F2FE"));
+                headerRow.setPadding(0, 12, 0, 12);
+                headerRow.addView(makeTableCell("Size", true, false));
+                headerRow.addView(makeTableCell("Type", true, false));
+                headerRow.addView(makeTableCell("Qty", true, false));
+                headerRow.addView(makeTableCell("Amount", true, false));
                 table.addView(headerRow);
 
                 int totalQty = 0;
@@ -295,28 +306,29 @@ public class MainActivity extends AppCompatActivity {
                     totalAmount += amount;
 
                     TableRow row = new TableRow(this);
-                    row.setBackgroundColor(i % 2 == 0 ? Color.parseColor("#FFFFFF") : Color.parseColor("#FAFAFA"));
-                    row.setPadding(0, 8, 0, 8);
+                    row.setBackgroundColor(i % 2 == 0 ? Color.parseColor("#FFFFFF") : Color.parseColor("#F8FAFC"));
+                    row.setPadding(0, 10, 0, 10);
                     
-                    row.addView(makeTableCell(size, false, Gravity.START));
-                    row.addView(makeTypeBadgeView(type));
-                    row.addView(makeTableCell(String.valueOf(qty), false, Gravity.END));
-                    row.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", amount), false, Gravity.END));
+                    row.addView(makeTableCell(size, false, false));
+                    row.addView(makeTableCell(type, false, false));
+                    row.addView(makeTableCell(String.valueOf(qty), false, false));
+                    row.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", amount), false, false));
                     table.addView(row);
                 }
 
                 // Total Footer Row
                 TableRow totalRow = new TableRow(this);
-                totalRow.setBackgroundColor(Color.parseColor("#EEF2FF"));
-                totalRow.setPadding(0, 10, 0, 10);
-                TextView tvTotalLabel = makeTableCell("Total", true, Gravity.START);
+                totalRow.setBackgroundColor(Color.parseColor("#F1F5F9"));
+                totalRow.setPadding(0, 12, 0, 12);
+                TextView tvTotalLabel = makeTableCell("Total", false, true);
                 tvTotalLabel.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
                 totalRow.addView(tvTotalLabel);
-                totalRow.addView(makeTableCell(String.valueOf(totalQty), true, Gravity.END));
-                totalRow.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", totalAmount), true, Gravity.END));
+                totalRow.addView(makeTableCell(String.valueOf(totalQty), false, true));
+                totalRow.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", totalAmount), false, true));
                 table.addView(totalRow);
 
-                cardInner.addView(table);
+                tableContainer.addView(table);
+                cardInner.addView(tableContainer);
                 card.addView(cardInner);
                 layoutHistoryBoxes.addView(card);
             } catch(Exception e) { e.printStackTrace(); }
@@ -518,20 +530,30 @@ public class MainActivity extends AppCompatActivity {
                 headerLayout.addView(tvDate);
                 cardInner.addView(headerLayout);
 
-                // Premium Table Layout
+                // Rounded Table Wrapper Container
+                LinearLayout tableContainer = new LinearLayout(this);
+                tableContainer.setOrientation(LinearLayout.VERTICAL);
+                GradientDrawable containerBg = new GradientDrawable();
+                containerBg.setShape(GradientDrawable.RECTANGLE);
+                containerBg.setCornerRadius(14f);
+                containerBg.setColor(Color.WHITE);
+                containerBg.setStroke(1, Color.parseColor("#CBD5E1"));
+                tableContainer.setBackground(containerBg);
+                tableContainer.setClipToOutline(true);
+
+                // Table Layout
                 TableLayout table = new TableLayout(this);
                 table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 table.setStretchAllColumns(true);
-                table.setPadding(0, 10, 0, 10);
 
-                // Header Row (Deep Indigo Background with White Text)
+                // Header Row (Soft Light Blue Background matching reference image)
                 TableRow headerRow = new TableRow(this);
-                headerRow.setBackgroundColor(Color.parseColor("#4F46E5"));
-                headerRow.setPadding(0, 10, 0, 10);
-                headerRow.addView(makeTableCell("Size", true, Gravity.START));
-                headerRow.addView(makeTableCell("Type", true, Gravity.START));
-                headerRow.addView(makeTableCell("Qty", true, Gravity.END));
-                headerRow.addView(makeTableCell("Amount", true, Gravity.END));
+                headerRow.setBackgroundColor(Color.parseColor("#E0F2FE"));
+                headerRow.setPadding(0, 12, 0, 12);
+                headerRow.addView(makeTableCell("Size", true, false));
+                headerRow.addView(makeTableCell("Type", true, false));
+                headerRow.addView(makeTableCell("Qty", true, false));
+                headerRow.addView(makeTableCell("Amount", true, false));
                 table.addView(headerRow);
 
                 int totalQty = 0;
@@ -548,33 +570,33 @@ public class MainActivity extends AppCompatActivity {
                     totalQty += qty;
                     totalAmount += amount;
 
-                    // Data Row with Zebra Striping
                     TableRow row = new TableRow(this);
-                    row.setBackgroundColor(i % 2 == 0 ? Color.parseColor("#FFFFFF") : Color.parseColor("#FAFAFA"));
-                    row.setPadding(0, 8, 0, 8);
+                    row.setBackgroundColor(i % 2 == 0 ? Color.parseColor("#FFFFFF") : Color.parseColor("#F8FAFC"));
+                    row.setPadding(0, 10, 0, 10);
                     
-                    row.addView(makeTableCell(size, false, Gravity.START));
-                    row.addView(makeTypeBadgeView(type));
-                    row.addView(makeTableCell(String.valueOf(qty), false, Gravity.END));
-                    row.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", amount), false, Gravity.END));
+                    row.addView(makeTableCell(size, false, false));
+                    row.addView(makeTableCell(type, false, false));
+                    row.addView(makeTableCell(String.valueOf(qty), false, false));
+                    row.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", amount), false, false));
                     table.addView(row);
                 }
 
                 grandTotalQty += totalQty;
                 grandTotalAmount += totalAmount;
 
-                // Total Footer Row (Soft Indigo tint)
+                // Total Footer Row
                 TableRow totalRow = new TableRow(this);
-                totalRow.setBackgroundColor(Color.parseColor("#EEF2FF"));
-                totalRow.setPadding(0, 10, 0, 10);
-                TextView tvTotalLabel = makeTableCell("Total", true, Gravity.START);
+                totalRow.setBackgroundColor(Color.parseColor("#F1F5F9"));
+                totalRow.setPadding(0, 12, 0, 12);
+                TextView tvTotalLabel = makeTableCell("Total", false, true);
                 tvTotalLabel.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
                 totalRow.addView(tvTotalLabel);
-                totalRow.addView(makeTableCell(String.valueOf(totalQty), true, Gravity.END));
-                totalRow.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", totalAmount), true, Gravity.END));
+                totalRow.addView(makeTableCell(String.valueOf(totalQty), false, true));
+                totalRow.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", totalAmount), false, true));
                 table.addView(totalRow);
 
-                cardInner.addView(table);
+                tableContainer.addView(table);
+                cardInner.addView(tableContainer);
 
                 CheckBox cbPaid = new CheckBox(this);
                 cbPaid.setText("Mark as Paid");
@@ -606,49 +628,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private TextView makeTableCell(String text, boolean isHeader, int gravity) {
+    private TextView makeTableCell(String text, boolean isHeader, boolean isTotal) {
         TextView tv = new TextView(this);
         tv.setText(text);
-        tv.setPadding(10, 8, 10, 8);
-        tv.setGravity(gravity);
+        tv.setPadding(12, 8, 12, 8);
+        tv.setGravity(Gravity.CENTER); // Middle aligned for all columns
         
         if(isHeader) {
-            tv.setTextColor(Color.WHITE);
-            tv.setTypeface(null, android.graphics.Typeface.BOLD);
-            tv.setTextSize(13f);
-        } else {
             tv.setTextColor(Color.parseColor("#1E293B"));
-            tv.setTextSize(12f);
+            tv.setTypeface(null, android.graphics.Typeface.BOLD);
+            tv.setTextSize(15f); // Increased text size for header
+        } else if(isTotal) {
+            tv.setTextColor(Color.parseColor("#0F172A"));
+            tv.setTypeface(null, android.graphics.Typeface.BOLD);
+            tv.setTextSize(14f); // Increased text size for totals
+        } else {
+            tv.setTextColor(Color.parseColor("#334155"));
+            tv.setTextSize(14f); // Increased text size for data cells
         }
         return tv;
-    }
-
-    private View makeTypeBadgeView(String type) {
-        LinearLayout container = new LinearLayout(this);
-        container.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
-        container.setPadding(0, 6, 0, 6);
-
-        TextView tv = new TextView(this);
-        tv.setText(type);
-        tv.setTextSize(11f);
-        tv.setTypeface(null, android.graphics.Typeface.BOLD);
-        tv.setPadding(12, 4, 12, 4);
-
-        GradientDrawable bg = new GradientDrawable();
-        bg.setShape(GradientDrawable.RECTANGLE);
-        bg.setCornerRadius(12f);
-
-        if(type.equalsIgnoreCase("Small")) {
-            bg.setColor(Color.parseColor("#D1FAE5")); // Soft Teal
-            tv.setTextColor(Color.parseColor("#065F46"));
-        } else {
-            bg.setColor(Color.parseColor("#E0E7FF")); // Soft Indigo
-            tv.setTextColor(Color.parseColor("#3730A3"));
-        }
-
-        tv.setBackground(bg);
-        container.addView(tv);
-        return container;
     }
 
     private void saveDataToStorage() {
