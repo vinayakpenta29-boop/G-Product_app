@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set Product Rates"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#4F46E5"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Product" 
+            android:textSize="13sp"
+            android:textStyle="bold" 
+            android:textColor="#334155"
+            android:layout_marginBottom="6dp"/>
+        <Spinner
+            android:id="@+id/spinnerRateProduct"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@android:drawable/btn_dropdown"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/tvBigRateLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Big Product Rates"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#334155"
+            android:layout_marginBottom="6dp"/>
+        <EditText
+            android:id="@+id/etBigRate"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:inputType="numberDecimal"
+            android:hint="Enter Big rate"
+            android:paddingHorizontal="12dp"
+            android:background="@android:drawable/editbox_background_normal"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/tvSmallRateLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Small Product Rates"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#334155"
+            android:layout_marginBottom="6dp"/>
+        <EditText
+            android:id="@+id/etSmallRate"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:inputType="numberDecimal"
+            android:hint="Enter Small rate"
+            android:paddingHorizontal="12dp"
+            android:background="@android:drawable/editbox_background_normal"
+            android:layout_marginBottom="20dp"/>
+
+        <Button
+            android:id="@+id/btnSaveRates"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="Save Rates"
+            android:textStyle="bold"
+            android:backgroundTint="#4F46E5"
+            android:textColor="#FFFFFF"
+            app:cornerRadius="10dp"/>
+
+    </LinearLayout>
+</ScrollView>
