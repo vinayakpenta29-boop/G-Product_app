@@ -9,4 +9,8 @@
         android:id="@+id/menu_rates"
         android:title="Product Rates"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_history"
+        android:title="History"
+        app:showAsAction="never" />
 </menu>
