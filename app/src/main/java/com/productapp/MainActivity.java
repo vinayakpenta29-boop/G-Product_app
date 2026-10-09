@@ -105,7 +105,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.menu_product) {
+        if (id == R.id.menu_home) {
+            showSection(layoutHome);
+            return true;
+        } else if (id == R.id.menu_product) {
             showSection(layoutProductConfig);
             return true;
         } else if (id == R.id.menu_rates) {
@@ -342,7 +345,9 @@ public class MainActivity extends AppCompatActivity {
             try {
                 JSONObject order = orderList.get(oIndex);
                 boolean isPaid = order.optBoolean("isPaid", false);
-                if(isPaid) continue; // Skip paid orders on home screen
+                if(isPaid) {
+                    continue; // EXCLUDE PAID TABLES FROM HOME SCREEN
+                }
 
                 String pName = order.getString("productName");
                 String date = order.optString("date", "");
@@ -452,7 +457,9 @@ public class MainActivity extends AppCompatActivity {
             try {
                 JSONObject order = orderList.get(index);
                 boolean isPaid = order.optBoolean("isPaid", false);
-                if(!isPaid) continue; // Only show paid orders in history
+                if(!isPaid) {
+                    continue; // EXCLUDE UNPAID TABLES FROM HISTORY SCREEN
+                }
 
                 String pName = order.getString("productName");
                 String date = order.optString("date", "");
