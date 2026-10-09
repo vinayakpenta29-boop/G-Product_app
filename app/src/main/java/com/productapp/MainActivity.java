@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -219,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
     private void showHistoryDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         ScrollView scrollView = new ScrollView(this);
-        scrollView.setPadding(20, 20, 20, 20);
+        scrollView.setPadding(16, 16, 16, 16);
         LinearLayout layoutHistoryBoxes = new LinearLayout(this);
         layoutHistoryBoxes.setOrientation(LinearLayout.VERTICAL);
         scrollView.addView(layoutHistoryBoxes);
@@ -246,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
 
                 LinearLayout cardInner = new LinearLayout(this);
                 cardInner.setOrientation(LinearLayout.VERTICAL);
-                cardInner.setPadding(16, 16, 16, 16);
+                cardInner.setPadding(18, 18, 18, 18);
                 cardInner.setBackgroundColor(Color.WHITE);
 
                 TextView tvHeading = new TextView(this);
@@ -261,18 +262,20 @@ public class MainActivity extends AppCompatActivity {
                 tvDates.setText("Created: " + date + " | Paid: " + paidDate);
                 tvDates.setTextSize(11);
                 tvDates.setTextColor(Color.parseColor("#64748B"));
-                tvDates.setPadding(0, 0, 0, 8);
+                tvDates.setPadding(0, 0, 0, 12);
                 cardInner.addView(tvDates);
 
                 TableLayout table = new TableLayout(this);
                 table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                table.setStretchAllColumns(true);
 
                 TableRow headerRow = new TableRow(this);
-                headerRow.setBackgroundColor(Color.parseColor("#E2E8F0"));
-                headerRow.addView(makeTableCell("Size", true));
-                headerRow.addView(makeTableCell("Type", true));
-                headerRow.addView(makeTableCell("Qty", true));
-                headerRow.addView(makeTableCell("Rate", true));
+                headerRow.setBackgroundColor(Color.parseColor("#F1F5F9"));
+                headerRow.setPadding(0, 8, 0, 8);
+                headerRow.addView(makeTableCell("Size", true, Gravity.START));
+                headerRow.addView(makeTableCell("Type", true, Gravity.START));
+                headerRow.addView(makeTableCell("Qty", true, Gravity.END));
+                headerRow.addView(makeTableCell("Amount", true, Gravity.END));
                 table.addView(headerRow);
 
                 int totalQty = 0;
@@ -290,20 +293,22 @@ public class MainActivity extends AppCompatActivity {
                     totalAmount += amount;
 
                     TableRow row = new TableRow(this);
-                    row.addView(makeTableCell(size, false));
-                    row.addView(makeTableCell(type, false));
-                    row.addView(makeTableCell(String.valueOf(qty), false));
-                    row.addView(makeTableCell(String.valueOf(amount), false));
+                    row.setPadding(0, 6, 0, 6);
+                    row.addView(makeTableCell(size, false, Gravity.START));
+                    row.addView(makeTableCell(type, false, Gravity.START));
+                    row.addView(makeTableCell(String.valueOf(qty), false, Gravity.END));
+                    row.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", amount), false, Gravity.END));
                     table.addView(row);
                 }
 
                 TableRow totalRow = new TableRow(this);
-                totalRow.setBackgroundColor(Color.parseColor("#F1F5F9"));
-                TextView tvTotalLabel = makeTableCell("Total", true);
+                totalRow.setBackgroundColor(Color.parseColor("#F8FAFC"));
+                totalRow.setPadding(0, 8, 0, 8);
+                TextView tvTotalLabel = makeTableCell("Total", true, Gravity.START);
                 tvTotalLabel.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
                 totalRow.addView(tvTotalLabel);
-                totalRow.addView(makeTableCell(String.valueOf(totalQty), true));
-                totalRow.addView(makeTableCell(String.valueOf(totalAmount), true));
+                totalRow.addView(makeTableCell(String.valueOf(totalQty), true, Gravity.END));
+                totalRow.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", totalAmount), true, Gravity.END));
                 table.addView(totalRow);
 
                 cardInner.addView(table);
@@ -508,16 +513,19 @@ public class MainActivity extends AppCompatActivity {
                 headerLayout.addView(tvDate);
                 cardInner.addView(headerLayout);
 
+                // Premium Table Layout
                 TableLayout table = new TableLayout(this);
                 table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-                table.setPadding(0, 8, 0, 8);
+                table.setStretchAllColumns(true);
+                table.setPadding(0, 10, 0, 10);
 
                 TableRow headerRow = new TableRow(this);
-                headerRow.setBackgroundColor(Color.parseColor("#E2E8F0"));
-                headerRow.addView(makeTableCell("Size", true));
-                headerRow.addView(makeTableCell("Type", true));
-                headerRow.addView(makeTableCell("Qty", true));
-                headerRow.addView(makeTableCell("Rate", true));
+                headerRow.setBackgroundColor(Color.parseColor("#F1F5F9"));
+                headerRow.setPadding(0, 8, 0, 8);
+                headerRow.addView(makeTableCell("Size", true, Gravity.START));
+                headerRow.addView(makeTableCell("Type", true, Gravity.START));
+                headerRow.addView(makeTableCell("Qty", true, Gravity.END));
+                headerRow.addView(makeTableCell("Amount", true, Gravity.END));
                 table.addView(headerRow);
 
                 int totalQty = 0;
@@ -535,10 +543,11 @@ public class MainActivity extends AppCompatActivity {
                     totalAmount += amount;
 
                     TableRow row = new TableRow(this);
-                    row.addView(makeTableCell(size, false));
-                    row.addView(makeTableCell(type, false));
-                    row.addView(makeTableCell(String.valueOf(qty), false));
-                    row.addView(makeTableCell(String.valueOf(amount), false));
+                    row.setPadding(0, 6, 0, 6);
+                    row.addView(makeTableCell(size, false, Gravity.START));
+                    row.addView(makeTableCell(type, false, Gravity.START));
+                    row.addView(makeTableCell(String.valueOf(qty), false, Gravity.END));
+                    row.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", amount), false, Gravity.END));
                     table.addView(row);
                 }
 
@@ -546,12 +555,13 @@ public class MainActivity extends AppCompatActivity {
                 grandTotalAmount += totalAmount;
 
                 TableRow totalRow = new TableRow(this);
-                totalRow.setBackgroundColor(Color.parseColor("#F1F5F9"));
-                TextView tvTotalLabel = makeTableCell("Total", true);
+                totalRow.setBackgroundColor(Color.parseColor("#F8FAFC"));
+                totalRow.setPadding(0, 8, 0, 8);
+                TextView tvTotalLabel = makeTableCell("Total", true, Gravity.START);
                 tvTotalLabel.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
                 totalRow.addView(tvTotalLabel);
-                totalRow.addView(makeTableCell(String.valueOf(totalQty), true));
-                totalRow.addView(makeTableCell(String.valueOf(totalAmount), true));
+                totalRow.addView(makeTableCell(String.valueOf(totalQty), true, Gravity.END));
+                totalRow.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", totalAmount), true, Gravity.END));
                 table.addView(totalRow);
 
                 cardInner.addView(table);
@@ -560,6 +570,7 @@ public class MainActivity extends AppCompatActivity {
                 cbPaid.setText("Mark as Paid");
                 cbPaid.setTextColor(Color.parseColor("#059669"));
                 cbPaid.setTypeface(null, android.graphics.Typeface.BOLD);
+                cbPaid.setPadding(0, 8, 0, 0);
                 cbPaid.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     if(isChecked) {
                         try {
@@ -581,20 +592,26 @@ public class MainActivity extends AppCompatActivity {
 
         if(tvSummaryTotalQty != null && tvSummaryTotalAmount != null) {
             tvSummaryTotalQty.setText(String.valueOf(grandTotalQty));
-            tvSummaryTotalAmount.setText(String.valueOf(grandTotalAmount));
+            tvSummaryTotalAmount.setText(String.format(Locale.getDefault(), "%.1f", grandTotalAmount));
         }
     }
 
-    private TextView makeTableCell(String text, boolean isHeader) {
+    private TextView makeTableCell(String text, boolean isHeader, int gravity) {
         TextView tv = new TextView(this);
         tv.setText(text);
-        tv.setPadding(10, 10, 10, 10);
-        tv.setTextColor(Color.parseColor("#1E293B"));
+        tv.setPadding(10, 8, 10, 8);
+        tv.setGravity(gravity);
+        tv.setTextColor(Color.parseColor("#334155"));
+        tv.setTextSize(13sp_approx(isHeader ? 13 : 12));
         if(isHeader) {
             tv.setTypeface(null, android.graphics.Typeface.BOLD);
             tv.setTextColor(Color.parseColor("#0F172A"));
         }
         return tv;
+    }
+
+    private float sp_approx(int sp) {
+        return sp;
     }
 
     private void saveDataToStorage() {
