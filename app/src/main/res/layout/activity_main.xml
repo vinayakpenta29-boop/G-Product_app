@@ -32,8 +32,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="3dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
                 app:strokeWidth="1dp"
                 app:strokeColor="#E2E8F0">
 
@@ -48,10 +48,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="New Order Entry"
-                        android:textSize="16sp"
+                        android:textSize="17sp"
                         android:textStyle="bold"
                         android:textColor="#4F46E5"
-                        android:layout_marginBottom="12dp"/>
+                        android:layout_marginBottom="14dp"/>
 
                     <TextView 
                         android:layout_width="wrap_content"
@@ -65,7 +65,8 @@
                         android:id="@+id/spinnerHomeProduct"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:background="@android:drawable/btn_dropdown"
+                        android:background="@drawable/bg_rounded_edittext"
+                        android:paddingHorizontal="12dp"
                         android:layout_marginBottom="16dp"/>
 
                     <LinearLayout
@@ -84,7 +85,7 @@
                         android:textStyle="bold"
                         android:backgroundTint="#4F46E5"
                         android:textColor="#FFFFFF"
-                        app:cornerRadius="10dp"/>
+                        app:cornerRadius="12dp"/>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -94,8 +95,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="3dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
                 app:strokeWidth="1dp"
                 app:strokeColor="#E2E8F0">
 
@@ -103,7 +104,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:padding="16dp"
+                    android:padding="18dp"
                     android:weightSum="2">
 
                     <LinearLayout
@@ -117,7 +118,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Total Qty"
-                            android:textSize="12sp"
+                            android:textSize="13sp"
                             android:textColor="#64748B"
                             android:textStyle="bold"/>
 
@@ -126,10 +127,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textSize="18sp"
+                            android:textSize="20sp"
                             android:textColor="#4F46E5"
                             android:textStyle="bold"
-                            android:layout_marginTop="4dp"/>
+                            android:layout_marginTop="6dp"/>
                     </LinearLayout>
 
                     <View
@@ -149,7 +150,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Total Amount"
-                            android:textSize="12sp"
+                            android:textSize="13sp"
                             android:textColor="#64748B"
                             android:textStyle="bold"/>
 
@@ -158,10 +159,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0.0"
-                            android:textSize="18sp"
+                            android:textSize="20sp"
                             android:textColor="#059669"
                             android:textStyle="bold"
-                            android:layout_marginTop="4dp"/>
+                            android:layout_marginTop="6dp"/>
                     </LinearLayout>
 
                 </LinearLayout>
