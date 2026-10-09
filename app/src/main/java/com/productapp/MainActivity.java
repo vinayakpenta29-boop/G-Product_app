@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout layoutHome, layoutProductConfig, layoutProductRates;
     private EditText etProductName, etBigFrom, etBigTo, etSmallFrom, etSmallTo, etBigRate, etSmallRate;
     private LinearLayout layoutSizeRows, layoutOrderInputs, layoutSavedBoxes;
-    private Spinner spinnerHomeProduct, spinnerCategory, spinnerRateProduct;
+    private Spinner spinnerHomeProduct, spinnerRateProduct;
     private ArrayList<EditText> sizeInputList = new ArrayList<>();
     
     private ArrayList<JSONObject> productList = new ArrayList<>();
@@ -51,24 +51,12 @@ public class MainActivity extends AppCompatActivity {
         layoutSavedBoxes = findViewById(R.id.layoutSavedBoxes);
         
         spinnerHomeProduct = findViewById(R.id.spinnerHomeProduct);
-        spinnerCategory = findViewById(R.id.spinnerCategory);
         spinnerRateProduct = findViewById(R.id.spinnerRateProduct);
 
         findViewById(R.id.btnAddSize).setOnClickListener(v -> addSizeInputField(""));
         findViewById(R.id.btnSaveProduct).setOnClickListener(v -> saveProductData());
         findViewById(R.id.btnSaveRates).setOnClickListener(v -> saveRateData());
         findViewById(R.id.btnSaveOrder).setOnClickListener(v -> saveOrderData());
-
-        ArrayAdapter<String> catAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new String[]{"-- Select Category --", "Big", "Small"});
-        spinnerCategory.setAdapter(catAdapter);
-        spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                renderOrderInputs();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
 
         spinnerHomeProduct.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -220,26 +208,42 @@ public class MainActivity extends AppCompatActivity {
     private void renderOrderInputs() {
         layoutOrderInputs.removeAllViews();
         int pPos = spinnerHomeProduct.getSelectedItemPosition();
-        int cPos = spinnerCategory.getSelectedItemPosition();
-        if(pPos <= 0 || cPos <= 0) return;
+        if(pPos <= 0) return;
 
         try {
             JSONObject p = productList.get(pPos - 1);
             JSONArray sizes = p.getJSONArray("sizes");
+            String bigFrom = p.optString("bigFrom", "");
+            String bigTo = p.optString("bigTo", "");
+            String smallFrom = p.optString("smallFrom", "");
+            String smallTo = p.optString("smallTo", "");
+
+            JSONObject rates = ratesMap.get(p.getString("name"));
+            double bigRate = 0, smallRate = 0;
+            if(rates != null) {
+                String bStr = rates.optString("big", "0");
+                String sStr = rates.optString("small", "0");
+                bigRate = bStr.isEmpty() ? 0 : Double.parseDouble(bStr);
+                smallRate = sStr.isEmpty() ? 0 : Double.parseDouble(sStr);
+            }
+
             for(int i = 0; i < sizes.length(); i++) {
                 String size = sizes.getString(i);
+                String type = getSizeType(size, bigFrom, bigTo, smallFrom, smallTo);
+                double rate = type.equals("Big") ? bigRate : smallRate;
+
                 LinearLayout row = new LinearLayout(this);
                 row.setOrientation(LinearLayout.HORIZONTAL);
                 row.setPadding(0, 4, 0, 4);
 
                 TextView tv = new TextView(this);
-                tv.setText("Size: " + size);
+                tv.setText("Size: " + size + " (" + type + ") - Rate: " + rate);
                 tv.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
 
                 EditText et = new EditText(this);
                 et.setHint("Enter Qty");
                 et.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-                et.setTag(size);
+                et.setTag(size + "|" + type + "|" + rate);
                 et.setLayoutParams(new LinearLayout.LayoutParams(250, LinearLayout.LayoutParams.WRAP_CONTENT));
 
                 row.addView(tv);
@@ -249,24 +253,31 @@ public class MainActivity extends AppCompatActivity {
         } catch(Exception e) { e.printStackTrace(); }
     }
 
+    private String getSizeType(String size, String bigFrom, String bigTo, String smallFrom, String smallTo) {
+        try {
+            double sVal = Double.parseDouble(size);
+            double bFrom = bigFrom.isEmpty() ? 0 : Double.parseDouble(bigFrom);
+            double bTo = bigTo.isEmpty() ? 0 : Double.parseDouble(bigTo);
+            if(!bigFrom.isEmpty() && !bigTo.isEmpty() && sVal >= bFrom && sVal <= bTo) return "Big";
+        } catch(Exception e) {}
+        try {
+            double sVal = Double.parseDouble(size);
+            double sFrom = smallFrom.isEmpty() ? 0 : Double.parseDouble(smallFrom);
+            double sTo = smallTo.isEmpty() ? 0 : Double.parseDouble(smallTo);
+            if(!smallFrom.isEmpty() && !smallTo.isEmpty() && sVal >= sFrom && sVal <= sTo) return "Small";
+        } catch(Exception e) {}
+        return "Big";
+    }
+
     private void saveOrderData() {
         int pPos = spinnerHomeProduct.getSelectedItemPosition();
-        int cPos = spinnerCategory.getSelectedItemPosition();
-        if(pPos <= 0 || cPos <= 0) {
-            Toast.makeText(this, "Select product and category", Toast.LENGTH_SHORT).show();
+        if(pPos <= 0) {
+            Toast.makeText(this, "Select a product first", Toast.LENGTH_SHORT).show();
             return;
         }
         try {
             JSONObject p = productList.get(pPos - 1);
             String pName = p.getString("name");
-            String cat = spinnerCategory.getSelectedItem().toString();
-
-            JSONObject rates = ratesMap.get(pName);
-            double rateVal = 0;
-            if(rates != null) {
-                String rStr = rates.optString(cat.toLowerCase(), "0");
-                rateVal = rStr.isEmpty() ? 0 : Double.parseDouble(rStr);
-            }
 
             JSONArray items = new JSONArray();
             for(int i = 0; i < layoutOrderInputs.getChildCount(); i++) {
@@ -274,12 +285,19 @@ public class MainActivity extends AppCompatActivity {
                 EditText et = (EditText) row.getChildAt(1);
                 String qStr = et.getText().toString().trim();
                 int qty = qStr.isEmpty() ? 0 : Integer.parseInt(qStr);
+                
                 if(qty > 0) {
+                    String tag = et.getTag().toString(); // size|type|rate
+                    String[] parts = tag.split("\\|");
+                    String size = parts[0];
+                    String type = parts[1];
+                    double rate = Double.parseDouble(parts[2]);
+
                     JSONObject item = new JSONObject();
-                    item.put("size", et.getTag().toString());
-                    item.put("type", cat);
+                    item.put("size", size);
+                    item.put("type", type);
                     item.put("qty", qty);
-                    item.put("rate", rateVal);
+                    item.put("rate", rate);
                     items.put(item);
                 }
             }
@@ -297,7 +315,6 @@ public class MainActivity extends AppCompatActivity {
 
             Toast.makeText(this, "Order Box Created!", Toast.LENGTH_SHORT).show();
             spinnerHomeProduct.setSelection(0);
-            spinnerCategory.setSelection(0);
             layoutOrderInputs.removeAllViews();
             renderSavedOrders();
         } catch(Exception e) { e.printStackTrace(); }
