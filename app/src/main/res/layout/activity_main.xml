@@ -1,188 +1,203 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
+    android:orientation="vertical"
     android:background="#F9FAFB">
 
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="?attr/actionBarSize"
+        android:background="#2563EB"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:title="Product Manager"
+        android:titleTextColor="#FFFFFF" />
 
-        <!-- HOME SECTION -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
         <LinearLayout
-            android:id="@+id/layoutHome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView android:text="Select Product" android:textStyle="bold" android:layout_marginBottom="4dp"/>
-            <Spinner
-                android:id="@+id/spinnerHomeProduct"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginBottom="12dp"/>
-
-            <TextView android:text="Big or Small Category" android:textStyle="bold" android:layout_marginBottom="4dp"/>
-            <Spinner
-                android:id="@+id/spinnerCategory"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginBottom="12dp"/>
-
+            <!-- HOME SECTION -->
             <LinearLayout
-                android:id="@+id/layoutOrderInputs"
+                android:id="@+id/layoutHome"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginBottom="12dp"/>
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btnSaveOrder"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Save Order Box"
-                android:backgroundTint="#2563EB"
-                android:textColor="#FFFFFF"/>
+                <TextView android:text="Select Product" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+                <Spinner
+                    android:id="@+id/spinnerHomeProduct"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="12dp"/>
 
-            <LinearLayout
-                android:id="@+id/layoutSavedBoxes"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="16dp"/>
-        </LinearLayout>
+                <TextView android:text="Big or Small Category" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+                <Spinner
+                    android:id="@+id/spinnerCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="12dp"/>
 
-        <!-- PRODUCT CONFIG SECTION -->
-        <LinearLayout
-            android:id="@+id/layoutProductConfig"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <TextView android:text="Product Name" android:textStyle="bold" android:layout_marginBottom="4dp"/>
-            <EditText
-                android:id="@+id/etProductName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Enter Product Name"
-                android:layout_marginBottom="12dp"/>
-
-            <TextView android:text="Product Sizes" android:textStyle="bold" android:layout_marginBottom="4dp"/>
-            <LinearLayout
-                android:id="@+id/layoutSizeRows"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginBottom="8dp"/>
-
-            <Button
-                android:id="@+id/btnAddSize"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="+ Add Size"
-                android:backgroundTint="#10B981"
-                android:textColor="#FFFFFF"
-                android:layout_marginBottom="16dp"/>
-
-            <TextView android:text="Big Sizes Range" android:textStyle="bold" android:layout_marginBottom="4dp"/>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="12dp">
-                <EditText
-                    android:id="@+id/etBigFrom"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:id="@+id/layoutOrderInputs"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="Size From"/>
-                <EditText
-                    android:id="@+id/etBigTo"
-                    android:layout_width="0dp"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="12dp"/>
+
+                <Button
+                    android:id="@+id/btnSaveOrder"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="Size To"/>
+                    android:text="Save Order Box"
+                    android:backgroundTint="#2563EB"
+                    android:textColor="#FFFFFF"/>
+
+                <LinearLayout
+                    android:id="@+id/layoutSavedBoxes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="16dp"/>
             </LinearLayout>
 
-            <TextView android:text="Small Sizes Range" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+            <!-- PRODUCT CONFIG SECTION -->
             <LinearLayout
+                android:id="@+id/layoutProductConfig"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView android:text="Product Name" android:textStyle="bold" android:layout_marginBottom="4dp"/>
                 <EditText
-                    android:id="@+id/etSmallFrom"
-                    android:layout_width="0dp"
+                    android:id="@+id/etProductName"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="Size From"/>
-                <EditText
-                    android:id="@+id/etSmallTo"
-                    android:layout_width="0dp"
+                    android:hint="Enter Product Name"
+                    android:layout_marginBottom="12dp"/>
+
+                <TextView android:text="Product Sizes" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+                <LinearLayout
+                    android:id="@+id/layoutSizeRows"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="Size To"/>
+                    android:orientation="vertical"
+                    android:layout_marginBottom="8dp"/>
+
+                <Button
+                    android:id="@+id/btnAddSize"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+ Add Size"
+                    android:backgroundTint="#10B981"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginBottom="16dp"/>
+
+                <TextView android:text="Big Sizes Range" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp">
+                    <EditText
+                        android:id="@+id/etBigFrom"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Size From"/>
+                    <EditText
+                        android:id="@+id/etBigTo"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Size To"/>
+                </LinearLayout>
+
+                <TextView android:text="Small Sizes Range" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+                    <EditText
+                        android:id="@+id/etSmallFrom"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Size From"/>
+                    <EditText
+                        android:id="@+id/etSmallTo"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Size To"/>
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnSaveProduct"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Save Product"
+                    android:backgroundTint="#2563EB"
+                    android:textColor="#FFFFFF"/>
             </LinearLayout>
 
-            <Button
-                android:id="@+id/btnSaveProduct"
+            <!-- PRODUCT RATES SECTION -->
+            <LinearLayout
+                android:id="@+id/layoutProductRates"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Save Product"
-                android:backgroundTint="#2563EB"
-                android:textColor="#FFFFFF"/>
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView android:text="Select Product" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+                <Spinner
+                    android:id="@+id/spinnerRateProduct"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="12dp"/>
+
+                <TextView
+                    android:id="@+id/tvBigRateLabel"
+                    android:text="Big Product Rates"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp"/>
+                <EditText
+                    android:id="@+id/etBigRate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:layout_marginBottom="12dp"/>
+
+                <TextView
+                    android:id="@+id/tvSmallRateLabel"
+                    android:text="Small Product Rates"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp"/>
+                <EditText
+                    android:id="@+id/etSmallRate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:layout_marginBottom="16dp"/>
+
+                <Button
+                    android:id="@+id/btnSaveRates"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Save Rates"
+                    android:backgroundTint="#2563EB"
+                    android:textColor="#FFFFFF"/>
+            </LinearLayout>
+
         </LinearLayout>
-
-        <!-- PRODUCT RATES SECTION -->
-        <LinearLayout
-            android:id="@+id/layoutProductRates"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <TextView android:text="Select Product" android:textStyle="bold" android:layout_marginBottom="4dp"/>
-            <Spinner
-                android:id="@+id/spinnerRateProduct"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginBottom="12dp"/>
-
-            <TextView
-                android:id="@+id/tvBigRateLabel"
-                android:text="Big Product Rates"
-                android:textStyle="bold"
-                android:layout_marginBottom="4dp"/>
-            <EditText
-                android:id="@+id/etBigRate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
-                android:layout_marginBottom="12dp"/>
-
-            <TextView
-                android:id="@+id/tvSmallRateLabel"
-                android:text="Small Product Rates"
-                android:textStyle="bold"
-                android:layout_marginBottom="4dp"/>
-            <EditText
-                android:id="@+id/etSmallRate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
-                android:layout_marginBottom="16dp"/>
-
-            <Button
-                android:id="@+id/btnSaveRates"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Save Rates"
-                android:backgroundTint="#2563EB"
-                android:textColor="#FFFFFF"/>
-        </LinearLayout>
-
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</LinearLayout>
