@@ -103,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
 
         Runnable addSizeRow = () -> {
             EditText et = new EditText(this);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 48 * getResources().getDisplayMetrics().density);
+            int heightPx = (int) (48 * getResources().getDisplayMetrics().density);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, heightPx);
             lp.setMargins(0, 0, 0, 8);
             et.setLayoutParams(lp);
             et.setHint("Enter Size (e.g. S, M, L)");
@@ -374,7 +375,9 @@ public class MainActivity extends AppCompatActivity {
                 et.setPadding(12, 10, 12, 10);
                 et.setBackgroundResource(R.drawable.bg_rounded_edittext);
                 et.setTag(size + "|" + type + "|" + rate);
-                et.setLayoutParams(new LinearLayout.LayoutParams(220, 48 * (int)getResources().getDisplayMetrics().density));
+                
+                int heightPx = (int) (48 * getResources().getDisplayMetrics().density);
+                et.setLayoutParams(new LinearLayout.LayoutParams(220, heightPx));
 
                 row.addView(tv);
                 row.addView(et);
