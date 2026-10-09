@@ -1,229 +1,341 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F9FAFB">
+    android:background="#F8FAFC">
 
+    <!-- Premium Toolbar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#2563EB"
+        android:background="#4F46E5"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:title="Product Manager"
-        android:titleTextColor="#FFFFFF" />
+        app:title="Product Manager"
+        app:titleTextColor="#FFFFFF" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- HOME SECTION -->
-            <LinearLayout
+            <!-- HOME SECTION CARD -->
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/layoutHome"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView 
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Select Product" 
-                    android:textStyle="bold" 
-                    android:layout_marginBottom="4dp"/>
-                <Spinner
-                    android:id="@+id/spinnerHomeProduct"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_marginBottom="12dp"/>
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="3dp"
+                app:cardUseCompatPadding="false"
+                app:strokeWidth="1dp"
+                app:strokeColor="#E2E8F0">
 
                 <LinearLayout
-                    android:id="@+id/layoutOrderInputs"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginBottom="12dp"/>
+                    android:padding="20dp">
 
-                <Button
-                    android:id="@+id/btnSaveOrder"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Save Order Box"
-                    android:backgroundTint="#2563EB"
-                    android:textColor="#FFFFFF"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="New Order Entry"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#4F46E5"
+                        android:layout_marginBottom="12dp"/>
 
-                <LinearLayout
-                    android:id="@+id/layoutSavedBoxes"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="16dp"/>
-            </LinearLayout>
+                    <TextView 
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Select Product" 
+                        android:textSize="13sp"
+                        android:textStyle="bold" 
+                        android:textColor="#334155"
+                        android:layout_marginBottom="6dp"/>
+                    <Spinner
+                        android:id="@+id/spinnerHomeProduct"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@android:drawable/btn_dropdown"
+                        android:layout_marginBottom="16dp"/>
 
-            <!-- PRODUCT CONFIG SECTION -->
+                    <LinearLayout
+                        android:id="@+id/layoutOrderInputs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="16dp"/>
+
+                    <Button
+                        android:id="@+id/btnSaveOrder"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:text="Save Order Box"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:backgroundTint="#4F46E5"
+                        android:textColor="#FFFFFF"
+                        app:cornerRadius="10dp"/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- SAVED ORDERS CONTAINER -->
             <LinearLayout
+                android:id="@+id/layoutSavedBoxes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
+
+            <!-- PRODUCT CONFIG SECTION CARD -->
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/layoutProductConfig"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
+                android:layout_marginBottom="16dp"
+                android:visibility="gone"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="3dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#E2E8F0">
 
-                <TextView 
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Product Name" 
-                    android:textStyle="bold" 
-                    android:layout_marginBottom="4dp"/>
-                <EditText
-                    android:id="@+id/etProductName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Enter Product Name"
-                    android:layout_marginBottom="12dp"/>
-
-                <TextView 
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Product Sizes" 
-                    android:textStyle="bold" 
-                    android:layout_marginBottom="4dp"/>
                 <LinearLayout
-                    android:id="@+id/layoutSizeRows"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginBottom="8dp"/>
+                    android:padding="20dp">
 
-                <Button
-                    android:id="@+id/btnAddSize"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="+ Add Size"
-                    android:backgroundTint="#10B981"
-                    android:textColor="#FFFFFF"
-                    android:layout_marginBottom="16dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Add Product &amp; Sizes"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#4F46E5"
+                        android:layout_marginBottom="16dp"/>
 
-                <TextView 
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Big Sizes Range" 
-                    android:textStyle="bold" 
-                    android:layout_marginBottom="4dp"/>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="12dp">
-                    <EditText
-                        android:id="@+id/etBigFrom"
-                        android:layout_width="0dp"
+                    <TextView 
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:hint="Size From"/>
+                        android:text="Product Name" 
+                        android:textSize="13sp"
+                        android:textStyle="bold" 
+                        android:textColor="#334155"
+                        android:layout_marginBottom="6dp"/>
                     <EditText
-                        android:id="@+id/etBigTo"
-                        android:layout_width="0dp"
+                        android:id="@+id/etProductName"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:hint="Enter Product Name"
+                        android:paddingHorizontal="12dp"
+                        android:background="@android:drawable/editbox_background_normal"
+                        android:layout_marginBottom="16dp"/>
+
+                    <TextView 
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:hint="Size To"/>
+                        android:text="Product Sizes" 
+                        android:textSize="13sp"
+                        android:textStyle="bold" 
+                        android:textColor="#334155"
+                        android:layout_marginBottom="6dp"/>
+                    <LinearLayout
+                        android:id="@+id/layoutSizeRows"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="8dp"/>
+
+                    <Button
+                        android:id="@+id/btnAddSize"
+                        android:layout_width="wrap_content"
+                        android:layout_height="44dp"
+                        android:text="+ Add Size"
+                        android:textStyle="bold"
+                        android:backgroundTint="#10B981"
+                        android:textColor="#FFFFFF"
+                        app:cornerRadius="8dp"
+                        android:layout_marginBottom="16dp"/>
+
+                    <TextView 
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Big Sizes Range" 
+                        android:textSize="13sp"
+                        android:textStyle="bold" 
+                        android:textColor="#334155"
+                        android:layout_marginBottom="6dp"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="16dp">
+                        <EditText
+                            android:id="@+id/etBigFrom"
+                            android:layout_width="0dp"
+                            android:layout_height="48dp"
+                            android:layout_weight="1"
+                            android:hint="Size From"
+                            android:paddingHorizontal="10dp"
+                            android:background="@android:drawable/editbox_background_normal"
+                            android:layout_marginRight="8dp"/>
+                        <EditText
+                            android:id="@+id/etBigTo"
+                            android:layout_width="0dp"
+                            android:layout_height="48dp"
+                            android:layout_weight="1"
+                            android:hint="Size To"
+                            android:paddingHorizontal="10dp"
+                            android:background="@android:drawable/editbox_background_normal"/>
+                    </LinearLayout>
+
+                    <TextView 
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Small Sizes Range" 
+                        android:textSize="13sp"
+                        android:textStyle="bold" 
+                        android:textColor="#334155"
+                        android:layout_marginBottom="6dp"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="20dp">
+                        <EditText
+                            android:id="@+id/etSmallFrom"
+                            android:layout_width="0dp"
+                            android:layout_height="48dp"
+                            android:layout_weight="1"
+                            android:hint="Size From"
+                            android:paddingHorizontal="10dp"
+                            android:background="@android:drawable/editbox_background_normal"
+                            android:layout_marginRight="8dp"/>
+                        <EditText
+                            android:id="@+id/etSmallTo"
+                            android:layout_width="0dp"
+                            android:layout_height="48dp"
+                            android:layout_weight="1"
+                            android:hint="Size To"
+                            android:paddingHorizontal="10dp"
+                            android:background="@android:drawable/editbox_background_normal"/>
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/btnSaveProduct"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:text="Save Product"
+                        android:textStyle="bold"
+                        android:backgroundTint="#4F46E5"
+                        android:textColor="#FFFFFF"
+                        app:cornerRadius="10dp"/>
+
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <TextView 
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Small Sizes Range" 
-                    android:textStyle="bold" 
-                    android:layout_marginBottom="4dp"/>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="16dp">
-                    <EditText
-                        android:id="@+id/etSmallFrom"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:hint="Size From"/>
-                    <EditText
-                        android:id="@+id/etSmallTo"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:hint="Size To"/>
-                </LinearLayout>
-
-                <Button
-                    android:id="@+id/btnSaveProduct"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Save Product"
-                    android:backgroundTint="#2563EB"
-                    android:textColor="#FFFFFF"/>
-            </LinearLayout>
-
-            <!-- PRODUCT RATES SECTION -->
-            <LinearLayout
+            <!-- PRODUCT RATES SECTION CARD -->
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/layoutProductRates"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
+                android:layout_marginBottom="16dp"
+                android:visibility="gone"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="3dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#E2E8F0">
 
-                <TextView 
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Select Product" 
-                    android:textStyle="bold" 
-                    android:layout_marginBottom="4dp"/>
-                <Spinner
-                    android:id="@+id/spinnerRateProduct"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_marginBottom="12dp"/>
-
-                <TextView
-                    android:id="@+id/tvBigRateLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Big Product Rates"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="4dp"/>
-                <EditText
-                    android:id="@+id/etBigRate"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:layout_marginBottom="12dp"/>
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-                <TextView
-                    android:id="@+id/tvSmallRateLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Small Product Rates"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="4dp"/>
-                <EditText
-                    android:id="@+id/etSmallRate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:layout_marginBottom="16dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Set Product Rates"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#4F46E5"
+                        android:layout_marginBottom="16dp"/>
 
-                <Button
-                    android:id="@+id/btnSaveRates"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Save Rates"
-                    android:backgroundTint="#2563EB"
-                    android:textColor="#FFFFFF"/>
-            </LinearLayout>
+                    <TextView 
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Select Product" 
+                        android:textSize="13sp"
+                        android:textStyle="bold" 
+                        android:textColor="#334155"
+                        android:layout_marginBottom="6dp"/>
+                    <Spinner
+                        android:id="@+id/spinnerRateProduct"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@android:drawable/btn_dropdown"
+                        android:layout_marginBottom="16dp"/>
+
+                    <TextView
+                        android:id="@+id/tvBigRateLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Big Product Rates"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:textColor="#334155"
+                        android:layout_marginBottom="6dp"/>
+                    <EditText
+                        android:id="@+id/etBigRate"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:inputType="numberDecimal"
+                        android:hint="Enter Big rate"
+                        android:paddingHorizontal="12dp"
+                        android:background="@android:drawable/editbox_background_normal"
+                        android:layout_marginBottom="16dp"/>
+
+                    <TextView
+                        android:id="@+id/tvSmallRateLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Small Product Rates"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:textColor="#334155"
+                        android:layout_marginBottom="6dp"/>
+                    <EditText
+                        android:id="@+id/etSmallRate"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:inputType="numberDecimal"
+                        android:hint="Enter Small rate"
+                        android:paddingHorizontal="12dp"
+                        android:background="@android:drawable/editbox_background_normal"
+                        android:layout_marginBottom="20dp"/>
+
+                    <Button
+                        android:id="@+id/btnSaveRates"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:text="Save Rates"
+                        android:textStyle="bold"
+                        android:backgroundTint="#4F46E5"
+                        android:textColor="#FFFFFF"
+                        app:cornerRadius="10dp"/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
     </ScrollView>
