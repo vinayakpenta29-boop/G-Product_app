@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="20dp">
+    android:background="@drawable/bg_dialog_rounded"
+    android:padding="24dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Set Product Rates"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="#4F46E5"
             android:layout_marginBottom="16dp"/>
@@ -31,7 +32,8 @@
             android:id="@+id/spinnerRateProduct"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@android:drawable/btn_dropdown"
+            android:background="@drawable/bg_rounded_edittext"
+            android:paddingHorizontal="12dp"
             android:layout_marginBottom="16dp"/>
 
         <TextView
@@ -50,7 +52,7 @@
             android:inputType="numberDecimal"
             android:hint="Enter Big rate"
             android:paddingHorizontal="12dp"
-            android:background="@android:drawable/editbox_background_normal"
+            android:background="@drawable/bg_rounded_edittext"
             android:layout_marginBottom="16dp"/>
 
         <TextView
@@ -69,8 +71,8 @@
             android:inputType="numberDecimal"
             android:hint="Enter Small rate"
             android:paddingHorizontal="12dp"
-            android:background="@android:drawable/editbox_background_normal"
-            android:layout_marginBottom="20dp"/>
+            android:background="@drawable/bg_rounded_edittext"
+            android:layout_marginBottom="24dp"/>
 
         <Button
             android:id="@+id/btnSaveRates"
@@ -80,7 +82,7 @@
             android:textStyle="bold"
             android:backgroundTint="#4F46E5"
             android:textColor="#FFFFFF"
-            app:cornerRadius="10dp"/>
+            app:cornerRadius="12dp"/>
 
     </LinearLayout>
 </ScrollView>
