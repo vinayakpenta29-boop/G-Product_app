@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Product &amp; Sizes"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#4F46E5"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Product Name" 
+            android:textSize="13sp"
+            android:textStyle="bold" 
+            android:textColor="#334155"
+            android:layout_marginBottom="6dp"/>
+        <EditText
+            android:id="@+id/etProductName"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Enter Product Name"
+            android:paddingHorizontal="12dp"
+            android:background="@android:drawable/editbox_background_normal"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Product Sizes" 
+            android:textSize="13sp"
+            android:textStyle="bold" 
+            android:textColor="#334155"
+            android:layout_marginBottom="6dp"/>
+        <LinearLayout
+            android:id="@+id/layoutSizeRows"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/btnAddSize"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:text="+ Add Size"
+            android:textStyle="bold"
+            android:backgroundTint="#10B981"
+            android:textColor="#FFFFFF"
+            app:cornerRadius="8dp"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Big Sizes Range" 
+            android:textSize="13sp"
+            android:textStyle="bold" 
+            android:textColor="#334155"
+            android:layout_marginBottom="6dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+            <EditText
+                android:id="@+id/etBigFrom"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:hint="Size From"
+                android:paddingHorizontal="10dp"
+                android:background="@android:drawable/editbox_background_normal"
+                android:layout_marginRight="8dp"/>
+            <EditText
+                android:id="@+id/etBigTo"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:hint="Size To"
+                android:paddingHorizontal="10dp"
+                android:background="@android:drawable/editbox_background_normal"/>
+        </LinearLayout>
+
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Small Sizes Range" 
+            android:textSize="13sp"
+            android:textStyle="bold" 
+            android:textColor="#334155"
+            android:layout_marginBottom="6dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+            <EditText
+                android:id="@+id/etSmallFrom"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:hint="Size From"
+                android:paddingHorizontal="10dp"
+                android:background="@android:drawable/editbox_background_normal"
+                android:layout_marginRight="8dp"/>
+            <EditText
+                android:id="@+id/etSmallTo"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:hint="Size To"
+                android:paddingHorizontal="10dp"
+                android:background="@android:drawable/editbox_background_normal"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSaveProduct"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="Save Product"
+            android:textStyle="bold"
+            android:backgroundTint="#4F46E5"
+            android:textColor="#FFFFFF"
+            app:cornerRadius="10dp"/>
+
+    </LinearLayout>
+</ScrollView>
