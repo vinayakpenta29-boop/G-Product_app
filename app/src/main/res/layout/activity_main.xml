@@ -31,14 +31,24 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView android:text="Select Product" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+                <TextView 
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Product" 
+                    android:textStyle="bold" 
+                    android:layout_marginBottom="4dp"/>
                 <Spinner
                     android:id="@+id/spinnerHomeProduct"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_marginBottom="12dp"/>
 
-                <TextView android:text="Big or Small Category" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+                <TextView 
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Big or Small Category" 
+                    android:textStyle="bold" 
+                    android:layout_marginBottom="4dp"/>
                 <Spinner
                     android:id="@+id/spinnerCategory"
                     android:layout_width="match_parent"
@@ -76,7 +86,12 @@
                 android:orientation="vertical"
                 android:visibility="gone">
 
-                <TextView android:text="Product Name" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+                <TextView 
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Product Name" 
+                    android:textStyle="bold" 
+                    android:layout_marginBottom="4dp"/>
                 <EditText
                     android:id="@+id/etProductName"
                     android:layout_width="match_parent"
@@ -84,7 +99,12 @@
                     android:hint="Enter Product Name"
                     android:layout_marginBottom="12dp"/>
 
-                <TextView android:text="Product Sizes" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+                <TextView 
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Product Sizes" 
+                    android:textStyle="bold" 
+                    android:layout_marginBottom="4dp"/>
                 <LinearLayout
                     android:id="@+id/layoutSizeRows"
                     android:layout_width="match_parent"
@@ -101,7 +121,12 @@
                     android:textColor="#FFFFFF"
                     android:layout_marginBottom="16dp"/>
 
-                <TextView android:text="Big Sizes Range" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+                <TextView 
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Big Sizes Range" 
+                    android:textStyle="bold" 
+                    android:layout_marginBottom="4dp"/>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -121,7 +146,12 @@
                         android:hint="Size To"/>
                 </LinearLayout>
 
-                <TextView android:text="Small Sizes Range" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+                <TextView 
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Small Sizes Range" 
+                    android:textStyle="bold" 
+                    android:layout_marginBottom="4dp"/>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -158,7 +188,12 @@
                 android:orientation="vertical"
                 android:visibility="gone">
 
-                <TextView android:text="Select Product" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+                <TextView 
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Product" 
+                    android:textStyle="bold" 
+                    android:layout_marginBottom="4dp"/>
                 <Spinner
                     android:id="@+id/spinnerRateProduct"
                     android:layout_width="match_parent"
@@ -167,6 +202,8 @@
 
                 <TextView
                     android:id="@+id/tvBigRateLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Big Product Rates"
                     android:textStyle="bold"
                     android:layout_marginBottom="4dp"/>
@@ -179,6 +216,8 @@
 
                 <TextView
                     android:id="@+id/tvSmallRateLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Small Product Rates"
                     android:textStyle="bold"
                     android:layout_marginBottom="4dp"/>
