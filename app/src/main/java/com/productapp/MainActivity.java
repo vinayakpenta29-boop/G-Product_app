@@ -513,7 +513,6 @@ public class MainActivity extends AppCompatActivity {
                 headerLayout.addView(tvDate);
                 cardInner.addView(headerLayout);
 
-                // Premium Table Layout
                 TableLayout table = new TableLayout(this);
                 table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 table.setStretchAllColumns(true);
@@ -602,16 +601,12 @@ public class MainActivity extends AppCompatActivity {
         tv.setPadding(10, 8, 10, 8);
         tv.setGravity(gravity);
         tv.setTextColor(Color.parseColor("#334155"));
-        tv.setTextSize(13sp_approx(isHeader ? 13 : 12));
+        tv.setTextSize(isHeader ? 13f : 12f);
         if(isHeader) {
             tv.setTypeface(null, android.graphics.Typeface.BOLD);
             tv.setTextColor(Color.parseColor("#0F172A"));
         }
         return tv;
-    }
-
-    private float sp_approx(int sp) {
-        return sp;
     }
 
     private void saveDataToStorage() {
