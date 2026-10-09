@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
                 JSONArray items = order.getJSONArray("items");
 
                 MaterialCardView card = new MaterialCardView(this);
-                card.setRadius(16f);
+                card.setRadius(20f);
                 card.setCardElevation(4f);
                 card.setStrokeWidth(1);
                 card.setStrokeColor(Color.parseColor("#E2E8F0"));
@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
                 tableContainer.setOrientation(LinearLayout.VERTICAL);
                 GradientDrawable containerBg = new GradientDrawable();
                 containerBg.setShape(GradientDrawable.RECTANGLE);
-                containerBg.setCornerRadius(14f);
+                containerBg.setCornerRadius(16f);
                 containerBg.setColor(Color.WHITE);
                 containerBg.setStroke(1, Color.parseColor("#CBD5E1"));
                 tableContainer.setBackground(containerBg);
@@ -281,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
                 table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 table.setStretchAllColumns(true);
 
-                // Header Row (Soft Light Blue Background matching reference image)
+                // Header Row
                 TableRow headerRow = new TableRow(this);
                 headerRow.setBackgroundColor(Color.parseColor("#E0F2FE"));
                 headerRow.setPadding(0, 12, 0, 12);
@@ -316,13 +316,12 @@ public class MainActivity extends AppCompatActivity {
                     table.addView(row);
                 }
 
-                // Total Footer Row
+                // Total Footer Row (Light Green Background)
                 TableRow totalRow = new TableRow(this);
-                totalRow.setBackgroundColor(Color.parseColor("#F1F5F9"));
+                totalRow.setBackgroundColor(Color.parseColor("#DCFCE7"));
                 totalRow.setPadding(0, 12, 0, 12);
-                TextView tvTotalLabel = makeTableCell("Total", false, true);
-                tvTotalLabel.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
-                totalRow.addView(tvTotalLabel);
+                totalRow.addView(makeTableCell("Total", false, true));
+                totalRow.addView(makeTableCell("", false, true));
                 totalRow.addView(makeTableCell(String.valueOf(totalQty), false, true));
                 totalRow.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", totalAmount), false, true));
                 table.addView(totalRow);
@@ -498,7 +497,7 @@ public class MainActivity extends AppCompatActivity {
                 JSONArray items = order.getJSONArray("items");
 
                 MaterialCardView card = new MaterialCardView(this);
-                card.setRadius(16f);
+                card.setRadius(20f);
                 card.setCardElevation(4f);
                 card.setStrokeWidth(1);
                 card.setStrokeColor(Color.parseColor("#E2E8F0"));
@@ -535,7 +534,7 @@ public class MainActivity extends AppCompatActivity {
                 tableContainer.setOrientation(LinearLayout.VERTICAL);
                 GradientDrawable containerBg = new GradientDrawable();
                 containerBg.setShape(GradientDrawable.RECTANGLE);
-                containerBg.setCornerRadius(14f);
+                containerBg.setCornerRadius(16f);
                 containerBg.setColor(Color.WHITE);
                 containerBg.setStroke(1, Color.parseColor("#CBD5E1"));
                 tableContainer.setBackground(containerBg);
@@ -546,7 +545,7 @@ public class MainActivity extends AppCompatActivity {
                 table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 table.setStretchAllColumns(true);
 
-                // Header Row (Soft Light Blue Background matching reference image)
+                // Header Row
                 TableRow headerRow = new TableRow(this);
                 headerRow.setBackgroundColor(Color.parseColor("#E0F2FE"));
                 headerRow.setPadding(0, 12, 0, 12);
@@ -584,13 +583,12 @@ public class MainActivity extends AppCompatActivity {
                 grandTotalQty += totalQty;
                 grandTotalAmount += totalAmount;
 
-                // Total Footer Row
+                // Total Footer Row (Light Green Background, column-aligned)
                 TableRow totalRow = new TableRow(this);
-                totalRow.setBackgroundColor(Color.parseColor("#F1F5F9"));
+                totalRow.setBackgroundColor(Color.parseColor("#DCFCE7"));
                 totalRow.setPadding(0, 12, 0, 12);
-                TextView tvTotalLabel = makeTableCell("Total", false, true);
-                tvTotalLabel.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
-                totalRow.addView(tvTotalLabel);
+                totalRow.addView(makeTableCell("Total", false, true));
+                totalRow.addView(makeTableCell("", false, true));
                 totalRow.addView(makeTableCell(String.valueOf(totalQty), false, true));
                 totalRow.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", totalAmount), false, true));
                 table.addView(totalRow);
@@ -637,14 +635,14 @@ public class MainActivity extends AppCompatActivity {
         if(isHeader) {
             tv.setTextColor(Color.parseColor("#1E293B"));
             tv.setTypeface(null, android.graphics.Typeface.BOLD);
-            tv.setTextSize(15f); // Increased text size for header
+            tv.setTextSize(15f);
         } else if(isTotal) {
             tv.setTextColor(Color.parseColor("#0F172A"));
             tv.setTypeface(null, android.graphics.Typeface.BOLD);
-            tv.setTextSize(14f); // Increased text size for totals
+            tv.setTextSize(14f);
         } else {
             tv.setTextColor(Color.parseColor("#334155"));
-            tv.setTextSize(14f); // Increased text size for data cells
+            tv.setTextSize(14f);
         }
         return tv;
     }
