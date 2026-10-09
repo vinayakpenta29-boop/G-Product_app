@@ -14,12 +14,21 @@
         android:textStyle="bold"
         android:textColor="#DC2626"
         android:gravity="center"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/btnCopyCrash"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Copy Crash Details"
+        android:backgroundTint="#2563EB"
+        android:textColor="#FFFFFF"
         android:layout_marginBottom="12dp"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Read the exact error details below:"
+        android:text="Read or copy the error details below:"
         android:textSize="14sp"
         android:textColor="#374151"
         android:layout_marginBottom="8dp"/>
