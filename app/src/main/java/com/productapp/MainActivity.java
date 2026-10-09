@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private LinearLayout layoutSavedBoxes, layoutOrderInputs;
     private Spinner spinnerHomeProduct;
+    private TextView tvSummaryTotalQty, tvSummaryTotalAmount;
     
     private ArrayList<JSONObject> productList = new ArrayList<>();
     private HashMap<String, JSONObject> ratesMap = new HashMap<>();
@@ -38,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
         layoutSavedBoxes = findViewById(R.id.layoutSavedBoxes);
         layoutOrderInputs = findViewById(R.id.layoutOrderInputs);
         spinnerHomeProduct = findViewById(R.id.spinnerHomeProduct);
+        
+        tvSummaryTotalQty = findViewById(R.id.tvSummaryTotalQty);
+        tvSummaryTotalAmount = findViewById(R.id.tvSummaryTotalAmount);
 
         findViewById(R.id.btnSaveOrder).setOnClickListener(v -> saveOrderData());
 
@@ -212,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 JSONObject order = orderList.get(index);
                 boolean isPaid = order.optBoolean("isPaid", false);
-                if(!isPaid) continue; // Only show paid orders in history
+                if(!isPaid) continue;
 
                 String pName = order.getString("productName");
                 String date = order.optString("date", "");
@@ -427,6 +431,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void renderSavedOrders() {
         layoutSavedBoxes.removeAllViews();
+        
+        int grandTotalQty = 0;
+        double grandTotalAmount = 0.0;
+
         for(int index = 0; index < orderList.size(); index++) {
             final int oIndex = index;
             try {
@@ -499,6 +507,10 @@ public class MainActivity extends AppCompatActivity {
                     table.addView(row);
                 }
 
+                // Add to grand totals
+                grandTotalQty += totalQty;
+                grandTotalAmount += totalAmount;
+
                 TableRow totalRow = new TableRow(this);
                 totalRow.setBackgroundColor(0xFFF1F5F9);
                 TextView tvTotalLabel = makeTableCell("Total", true);
@@ -530,6 +542,12 @@ public class MainActivity extends AppCompatActivity {
 
                 layoutSavedBoxes.addView(card);
             } catch(Exception e) { e.printStackTrace(); }
+        }
+
+        // Update the summary dashboard card
+        if(tvSummaryTotalQty != null && tvSummaryTotalAmount != null) {
+            tvSummaryTotalQty.setText(String.valueOf(grandTotalQty));
+            tvSummaryTotalAmount.setText(String.valueOf(grandTotalAmount));
         }
     }
 
