@@ -226,6 +226,10 @@ public class MainActivity extends AppCompatActivity {
         layoutHistoryBoxes.setOrientation(LinearLayout.VERTICAL);
         scrollView.addView(layoutHistoryBoxes);
 
+        float density = getResources().getDisplayMetrics().density;
+        float cardRadiusPx = 24f * density;
+        float tableRadiusPx = 18f * density;
+
         for(int index = 0; index < orderList.size(); index++) {
             try {
                 JSONObject order = orderList.get(index);
@@ -237,19 +241,21 @@ public class MainActivity extends AppCompatActivity {
                 String paidDate = order.optString("paidDate", "");
                 JSONArray items = order.getJSONArray("items");
 
+                // Prominently rounded outer card
                 MaterialCardView card = new MaterialCardView(this);
-                card.setRadius(20f);
-                card.setCardElevation(4f);
-                card.setStrokeWidth(1);
+                card.setRadius(cardRadiusPx);
+                card.setCardElevation(4f * density);
+                card.setStrokeWidth((int) (1 * density));
                 card.setStrokeColor(Color.parseColor("#E2E8F0"));
+                card.setCardBackgroundColor(Color.WHITE);
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                lp.setMargins(0, 0, 0, 16);
+                lp.setMargins(0, 0, 0, (int) (16 * density));
                 card.setLayoutParams(lp);
 
                 LinearLayout cardInner = new LinearLayout(this);
                 cardInner.setOrientation(LinearLayout.VERTICAL);
-                cardInner.setPadding(18, 18, 18, 18);
-                cardInner.setBackgroundColor(Color.WHITE);
+                int padPx = (int) (18 * density);
+                cardInner.setPadding(padPx, padPx, padPx, padPx);
 
                 TextView tvHeading = new TextView(this);
                 tvHeading.setText(pName);
@@ -263,17 +269,17 @@ public class MainActivity extends AppCompatActivity {
                 tvDates.setText("Created: " + date + " | Paid: " + paidDate);
                 tvDates.setTextSize(11);
                 tvDates.setTextColor(Color.parseColor("#64748B"));
-                tvDates.setPadding(0, 0, 0, 12);
+                tvDates.setPadding(0, 0, 0, (int) (12 * density));
                 cardInner.addView(tvDates);
 
-                // Rounded Table Wrapper Container
+                // Prominently rounded table container
                 LinearLayout tableContainer = new LinearLayout(this);
                 tableContainer.setOrientation(LinearLayout.VERTICAL);
                 GradientDrawable containerBg = new GradientDrawable();
                 containerBg.setShape(GradientDrawable.RECTANGLE);
-                containerBg.setCornerRadius(16f);
+                containerBg.setCornerRadius(tableRadiusPx);
                 containerBg.setColor(Color.WHITE);
-                containerBg.setStroke(1, Color.parseColor("#CBD5E1"));
+                containerBg.setStroke((int) (1 * density), Color.parseColor("#CBD5E1"));
                 tableContainer.setBackground(containerBg);
                 tableContainer.setClipToOutline(true);
 
@@ -284,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
                 // Header Row
                 TableRow headerRow = new TableRow(this);
                 headerRow.setBackgroundColor(Color.parseColor("#E0F2FE"));
-                headerRow.setPadding(0, 12, 0, 12);
+                headerRow.setPadding(0, (int) (12 * density), 0, (int) (12 * density));
                 headerRow.addView(makeTableCell("Size", true, false));
                 headerRow.addView(makeTableCell("Type", true, false));
                 headerRow.addView(makeTableCell("Qty", true, false));
@@ -307,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
 
                     TableRow row = new TableRow(this);
                     row.setBackgroundColor(i % 2 == 0 ? Color.parseColor("#FFFFFF") : Color.parseColor("#F8FAFC"));
-                    row.setPadding(0, 10, 0, 10);
+                    row.setPadding(0, (int) (10 * density), 0, (int) (10 * density));
                     
                     row.addView(makeTableCell(size, false, false));
                     row.addView(makeTableCell(type, false, false));
@@ -319,7 +325,7 @@ public class MainActivity extends AppCompatActivity {
                 // Total Footer Row (Light Green Background)
                 TableRow totalRow = new TableRow(this);
                 totalRow.setBackgroundColor(Color.parseColor("#DCFCE7"));
-                totalRow.setPadding(0, 12, 0, 12);
+                totalRow.setPadding(0, (int) (12 * density), 0, (int) (12 * density));
                 totalRow.addView(makeTableCell("Total", false, true));
                 totalRow.addView(makeTableCell("", false, true));
                 totalRow.addView(makeTableCell(String.valueOf(totalQty), false, true));
@@ -485,6 +491,10 @@ public class MainActivity extends AppCompatActivity {
         int grandTotalQty = 0;
         double grandTotalAmount = 0.0;
 
+        float density = getResources().getDisplayMetrics().density;
+        float cardRadiusPx = 24f * density;
+        float tableRadiusPx = 18f * density;
+
         for(int index = 0; index < orderList.size(); index++) {
             final int oIndex = index;
             try {
@@ -496,19 +506,21 @@ public class MainActivity extends AppCompatActivity {
                 String date = order.optString("date", "");
                 JSONArray items = order.getJSONArray("items");
 
+                // Prominently rounded outer card
                 MaterialCardView card = new MaterialCardView(this);
-                card.setRadius(20f);
-                card.setCardElevation(4f);
-                card.setStrokeWidth(1);
+                card.setRadius(cardRadiusPx);
+                card.setCardElevation(4f * density);
+                card.setStrokeWidth((int) (1 * density));
                 card.setStrokeColor(Color.parseColor("#E2E8F0"));
+                card.setCardBackgroundColor(Color.WHITE);
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                lp.setMargins(0, 0, 0, 16);
+                lp.setMargins(0, 0, 0, (int) (16 * density));
                 card.setLayoutParams(lp);
 
                 LinearLayout cardInner = new LinearLayout(this);
                 cardInner.setOrientation(LinearLayout.VERTICAL);
-                cardInner.setPadding(18, 18, 18, 18);
-                cardInner.setBackgroundColor(Color.WHITE);
+                int padPx = (int) (18 * density);
+                cardInner.setPadding(padPx, padPx, padPx, padPx);
 
                 LinearLayout headerLayout = new LinearLayout(this);
                 headerLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -529,14 +541,14 @@ public class MainActivity extends AppCompatActivity {
                 headerLayout.addView(tvDate);
                 cardInner.addView(headerLayout);
 
-                // Rounded Table Wrapper Container
+                // Prominently rounded table container
                 LinearLayout tableContainer = new LinearLayout(this);
                 tableContainer.setOrientation(LinearLayout.VERTICAL);
                 GradientDrawable containerBg = new GradientDrawable();
                 containerBg.setShape(GradientDrawable.RECTANGLE);
-                containerBg.setCornerRadius(16f);
+                containerBg.setCornerRadius(tableRadiusPx);
                 containerBg.setColor(Color.WHITE);
-                containerBg.setStroke(1, Color.parseColor("#CBD5E1"));
+                containerBg.setStroke((int) (1 * density), Color.parseColor("#CBD5E1"));
                 tableContainer.setBackground(containerBg);
                 tableContainer.setClipToOutline(true);
 
@@ -548,7 +560,7 @@ public class MainActivity extends AppCompatActivity {
                 // Header Row
                 TableRow headerRow = new TableRow(this);
                 headerRow.setBackgroundColor(Color.parseColor("#E0F2FE"));
-                headerRow.setPadding(0, 12, 0, 12);
+                headerRow.setPadding(0, (int) (12 * density), 0, (int) (12 * density));
                 headerRow.addView(makeTableCell("Size", true, false));
                 headerRow.addView(makeTableCell("Type", true, false));
                 headerRow.addView(makeTableCell("Qty", true, false));
@@ -571,7 +583,7 @@ public class MainActivity extends AppCompatActivity {
 
                     TableRow row = new TableRow(this);
                     row.setBackgroundColor(i % 2 == 0 ? Color.parseColor("#FFFFFF") : Color.parseColor("#F8FAFC"));
-                    row.setPadding(0, 10, 0, 10);
+                    row.setPadding(0, (int) (10 * density), 0, (int) (10 * density));
                     
                     row.addView(makeTableCell(size, false, false));
                     row.addView(makeTableCell(type, false, false));
@@ -586,7 +598,7 @@ public class MainActivity extends AppCompatActivity {
                 // Total Footer Row (Light Green Background, column-aligned)
                 TableRow totalRow = new TableRow(this);
                 totalRow.setBackgroundColor(Color.parseColor("#DCFCE7"));
-                totalRow.setPadding(0, 12, 0, 12);
+                totalRow.setPadding(0, (int) (12 * density), 0, (int) (12 * density));
                 totalRow.addView(makeTableCell("Total", false, true));
                 totalRow.addView(makeTableCell("", false, true));
                 totalRow.addView(makeTableCell(String.valueOf(totalQty), false, true));
@@ -600,7 +612,7 @@ public class MainActivity extends AppCompatActivity {
                 cbPaid.setText("Mark as Paid");
                 cbPaid.setTextColor(Color.parseColor("#059669"));
                 cbPaid.setTypeface(null, android.graphics.Typeface.BOLD);
-                cbPaid.setPadding(0, 8, 0, 0);
+                cbPaid.setPadding(0, (int) (8 * density), 0, 0);
                 cbPaid.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     if(isChecked) {
                         try {
@@ -629,8 +641,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView makeTableCell(String text, boolean isHeader, boolean isTotal) {
         TextView tv = new TextView(this);
         tv.setText(text);
-        tv.setPadding(12, 8, 12, 8);
-        tv.setGravity(Gravity.CENTER); // Middle aligned for all columns
+        int padH = (int) (12 * getResources().getDisplayMetrics().density);
+        int padV = (int) (8 * getResources().getDisplayMetrics().density);
+        tv.setPadding(padH, padV, padH, padV);
+        tv.setGravity(Gravity.CENTER);
         
         if(isHeader) {
             tv.setTextColor(Color.parseColor("#1E293B"));
