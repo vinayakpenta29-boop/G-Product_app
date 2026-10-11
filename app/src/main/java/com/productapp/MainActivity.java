@@ -13,6 +13,7 @@ import android.widget.*;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -234,7 +235,8 @@ public class MainActivity extends AppCompatActivity {
 
         AlertDialog[] dialogHolder = new AlertDialog[1];
 
-        for(int index = 0; index < orderList.size(); index++) {
+        // Newest First: Iterate backwards from orderList.size() - 1 down to 0
+        for(int index = orderList.size() - 1; index >= 0; index--) {
             try {
                 final JSONObject order = orderList.get(index);
                 boolean isPaid = order.optBoolean("isPaid", false);
@@ -381,7 +383,7 @@ public class MainActivity extends AppCompatActivity {
 
         CheckBox cb = new CheckBox(this);
         cb.setText("Mark as Paid");
-        cb.setChecked(true); // Checked by default in History
+        cb.setChecked(true);
         cb.setTextColor(COLOR_GREEN);
         cb.setTextSize(15f);
         cb.setTypeface(null, android.graphics.Typeface.BOLD);
@@ -414,33 +416,120 @@ public class MainActivity extends AppCompatActivity {
         statusDialog.show();
     }
 
+    // Curved Rounded Pop-up for Home Order Options
     private void showHomeOrderOptionsDialog(JSONObject order) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        float density = getResources().getDisplayMetrics().density;
+        int pad = (int) (24 * density);
+        layout.setPadding(pad, pad, pad, pad);
+        layout.setBackgroundResource(R.drawable.bg_dialog_rounded);
+
         String pName = order.optString("productName", "Order");
-        builder.setTitle(pName + " Options");
-        String[] options = {"Edit Order Box", "Delete Order Box"};
-        builder.setItems(options, (dialog, which) -> {
-            if (which == 0) {
-                showEditOrderDialog(order);
-            } else if (which == 1) {
-                confirmDeleteOrder(order);
-            }
+        TextView tvTitle = new TextView(this);
+        tvTitle.setText(pName + " Options");
+        tvTitle.setTextSize(18f);
+        tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+        tvTitle.setTextColor(Color.parseColor("#1E293B"));
+        tvTitle.setPadding(0, 0, 0, (int) (14 * density));
+        layout.addView(tvTitle);
+
+        TextView tvEdit = new TextView(this);
+        tvEdit.setText("Edit Order Box");
+        tvEdit.setTextSize(15f);
+        tvEdit.setTextColor(Color.parseColor("#334155"));
+        tvEdit.setPadding(0, (int) (10 * density), 0, (int) (10 * density));
+        layout.addView(tvEdit);
+
+        TextView tvDelete = new TextView(this);
+        tvDelete.setText("Delete Order Box");
+        tvDelete.setTextSize(15f);
+        tvDelete.setTextColor(Color.parseColor("#EF4444"));
+        tvDelete.setPadding(0, (int) (10 * density), 0, (int) (6 * density));
+        layout.addView(tvDelete);
+
+        builder.setView(layout);
+        AlertDialog dialog = builder.create();
+        if(dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        tvEdit.setOnClickListener(v -> {
+            dialog.dismiss();
+            showEditOrderDialog(order);
         });
-        builder.show();
+
+        tvDelete.setOnClickListener(v -> {
+            dialog.dismiss();
+            confirmDeleteOrder(order);
+        });
+
+        dialog.show();
     }
 
+    // Curved Rounded Pop-up for Delete Order Confirmation
     private void confirmDeleteOrder(JSONObject order) {
-        new AlertDialog.Builder(this)
-            .setTitle("Delete Order Box")
-            .setMessage("Are you sure you want to delete this order box?")
-            .setPositiveButton("Delete", (dialog, which) -> {
-                orderList.remove(order);
-                saveDataToStorage();
-                renderSavedOrders();
-                Toast.makeText(this, "Order Box Deleted", Toast.LENGTH_SHORT).show();
-            })
-            .setNegativeButton("Cancel", null)
-            .show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        float density = getResources().getDisplayMetrics().density;
+        int pad = (int) (24 * density);
+        layout.setPadding(pad, pad, pad, pad);
+        layout.setBackgroundResource(R.drawable.bg_dialog_rounded);
+
+        TextView tvTitle = new TextView(this);
+        tvTitle.setText("Delete Order Box");
+        tvTitle.setTextSize(18f);
+        tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+        tvTitle.setTextColor(Color.parseColor("#1E293B"));
+        layout.addView(tvTitle);
+
+        TextView tvMsg = new TextView(this);
+        tvMsg.setText("Are you sure you want to delete this order box?");
+        tvMsg.setTextSize(14f);
+        tvMsg.setTextColor(Color.parseColor("#64748B"));
+        tvMsg.setPadding(0, (int) (12 * density), 0, (int) (20 * density));
+        layout.addView(tvMsg);
+
+        LinearLayout btnLayout = new LinearLayout(this);
+        btnLayout.setOrientation(LinearLayout.HORIZONTAL);
+        btnLayout.setGravity(Gravity.END);
+
+        TextView btnCancel = new TextView(this);
+        btnCancel.setText("CANCEL");
+        btnCancel.setTextSize(14f);
+        btnCancel.setTypeface(null, android.graphics.Typeface.BOLD);
+        btnCancel.setTextColor(Color.parseColor("#4F46E5"));
+        btnCancel.setPadding((int) (12 * density), (int) (8 * density), (int) (12 * density), (int) (8 * density));
+
+        TextView btnDelete = new TextView(this);
+        btnDelete.setText("DELETE");
+        btnDelete.setTextSize(14f);
+        btnDelete.setTypeface(null, android.graphics.Typeface.BOLD);
+        btnDelete.setTextColor(Color.parseColor("#EF4444"));
+        btnDelete.setPadding((int) (12 * density), (int) (8 * density), (int) (12 * density), (int) (8 * density));
+
+        btnLayout.addView(btnCancel);
+        btnLayout.addView(btnDelete);
+        layout.addView(btnLayout);
+
+        builder.setView(layout);
+        AlertDialog dialog = builder.create();
+        if(dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnDelete.setOnClickListener(v -> {
+            orderList.remove(order);
+            saveDataToStorage();
+            renderSavedOrders();
+            Toast.makeText(this, "Order Box Deleted", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 
     private void showEditOrderDialog(JSONObject order) {
@@ -464,7 +553,6 @@ public class MainActivity extends AppCompatActivity {
         tvTitle.setPadding(0, 0, 0, (int) (16 * density));
         contentLayout.addView(tvTitle);
 
-        // Find product config to load sizes
         JSONObject product = null;
         for(JSONObject p : productList) {
             if(p.optString("name", "").equals(pName)) {
@@ -473,7 +561,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // Existing quantities map
         HashMap<String, Integer> currentQtyMap = new HashMap<>();
         JSONArray oldItems = order.optJSONArray("items");
         if(oldItems != null) {
@@ -570,11 +657,15 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        Button btnSave = new Button(this);
-        btnSave.setText("Update Order Box");
+        // Rounded "UPDATE ORDER BOX" MaterialButton
+        MaterialButton btnSave = new MaterialButton(this);
+        btnSave.setText("UPDATE ORDER BOX");
         btnSave.setTextColor(Color.WHITE);
+        btnSave.setTextSize(15f);
+        btnSave.setTypeface(null, android.graphics.Typeface.BOLD);
+        btnSave.setCornerRadius((int) (14 * density));
         btnSave.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#4F46E5")));
-        LinearLayout.LayoutParams btnLp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) (50 * density));
+        LinearLayout.LayoutParams btnLp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) (52 * density));
         btnLp.setMargins(0, (int) (18 * density), 0, 0);
         btnSave.setLayoutParams(btnLp);
         contentLayout.addView(btnSave);
@@ -772,7 +863,8 @@ public class MainActivity extends AppCompatActivity {
         float cardRadiusPx = 24f * density;
         float tableRadiusPx = 18f * density;
 
-        for(int index = 0; index < orderList.size(); index++) {
+        // Newest First: Iterate backwards from orderList.size() - 1 down to 0
+        for(int index = orderList.size() - 1; index >= 0; index--) {
             final int oIndex = index;
             try {
                 final JSONObject order = orderList.get(oIndex);
