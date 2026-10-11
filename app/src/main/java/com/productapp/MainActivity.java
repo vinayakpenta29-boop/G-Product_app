@@ -106,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
 
-        // Option 1: Add Product & Sizes
         layout.addView(createMenuItem("Add Product & Sizes", () -> {
             dialog.dismiss();
             showProductConfigDialog();
@@ -114,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
 
         layout.addView(createMenuDivider());
 
-        // Option 2: Product Rates
         layout.addView(createMenuItem("Product Rates", () -> {
             dialog.dismiss();
             showProductRatesDialog();
@@ -122,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
 
         layout.addView(createMenuDivider());
 
-        // Option 3: History
         layout.addView(createMenuItem("Paid Orders History", () -> {
             dialog.dismiss();
             showHistoryDialog();
@@ -136,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         tv.setText(text);
         tv.setTextSize(15f);
         tv.setTypeface(null, android.graphics.Typeface.BOLD);
-        tv.setTextColor(Color.parseColor("#1E293B")); // Dark, high contrast text
+        tv.setTextColor(Color.parseColor("#1E293B"));
         float density = getResources().getDisplayMetrics().density;
         tv.setPadding((int) (8 * density), (int) (12 * density), (int) (8 * density), (int) (12 * density));
         tv.setOnClickListener(v -> action.run());
@@ -170,7 +167,6 @@ public class MainActivity extends AppCompatActivity {
         EditText etSmallTo = view.findViewById(R.id.etSmallTo);
         ArrayList<EditText> dialogSizeList = new ArrayList<>();
 
-        // Helper to add a square OTP-style box
         Runnable addSizeRow = () -> {
             EditText et = new EditText(this);
             int boxSizePx = (int) (50 * getResources().getDisplayMetrics().density);
@@ -189,7 +185,6 @@ public class MainActivity extends AppCompatActivity {
             dialogSizeList.add(et);
         };
 
-        // Add 3 clean OTP-style square boxes by default
         for(int i = 0; i < 3; i++) {
             addSizeRow.run();
         }
@@ -297,27 +292,50 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    // FIXED: Properly wraps content in a solid rounded card with empty state handling
     private void showHistoryDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        float density = getResources().getDisplayMetrics().density;
+
+        LinearLayout dialogRoot = new LinearLayout(this);
+        dialogRoot.setOrientation(LinearLayout.VERTICAL);
+        int pad = (int) (20 * density);
+        dialogRoot.setPadding(pad, pad, pad, pad);
+        dialogRoot.setBackgroundResource(R.drawable.bg_dialog_rounded);
+
+        TextView tvTitle = new TextView(this);
+        tvTitle.setText("Paid Orders History");
+        tvTitle.setTextSize(18f);
+        tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+        tvTitle.setTextColor(Color.parseColor("#4F46E5"));
+        tvTitle.setPadding(0, 0, 0, (int) (14 * density));
+        dialogRoot.addView(tvTitle);
+
         ScrollView scrollView = new ScrollView(this);
-        scrollView.setPadding(16, 16, 16, 16);
+        LinearLayout.LayoutParams scrollLp = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, 
+            0, 
+            1f
+        );
+        scrollView.setLayoutParams(scrollLp);
+
         LinearLayout layoutHistoryBoxes = new LinearLayout(this);
         layoutHistoryBoxes.setOrientation(LinearLayout.VERTICAL);
         scrollView.addView(layoutHistoryBoxes);
+        dialogRoot.addView(scrollView);
 
-        float density = getResources().getDisplayMetrics().density;
-        float cardRadiusPx = 24f * density;
-        float tableRadiusPx = 18f * density;
-
+        float cardRadiusPx = 20f * density;
+        float tableRadiusPx = 16f * density;
         AlertDialog[] dialogHolder = new AlertDialog[1];
+        boolean hasPaidOrders = false;
 
-        // Newest First: Iterate backwards from orderList.size() - 1 down to 0
         for(int index = orderList.size() - 1; index >= 0; index--) {
             try {
                 final JSONObject order = orderList.get(index);
                 boolean isPaid = order.optBoolean("isPaid", false);
                 if(!isPaid) continue;
 
+                hasPaidOrders = true;
                 String pName = order.getString("productName");
                 String date = order.optString("date", "");
                 String paidDate = order.optString("paidDate", "");
@@ -325,15 +343,17 @@ public class MainActivity extends AppCompatActivity {
 
                 MaterialCardView card = new MaterialCardView(this);
                 card.setRadius(cardRadiusPx);
-                card.setCardElevation(4f * density);
+                card.setCardElevation(3f * density);
                 card.setStrokeWidth((int) (1 * density));
                 card.setStrokeColor(Color.parseColor("#E2E8F0"));
                 card.setCardBackgroundColor(Color.WHITE);
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                );
                 lp.setMargins(0, 0, 0, (int) (16 * density));
                 card.setLayoutParams(lp);
 
-                // Long Press Listener for History Table
                 card.setOnLongClickListener(v -> {
                     showHistoryOrderOptionsDialog(order, dialogHolder[0]);
                     return true;
@@ -341,8 +361,8 @@ public class MainActivity extends AppCompatActivity {
 
                 LinearLayout cardInner = new LinearLayout(this);
                 cardInner.setOrientation(LinearLayout.VERTICAL);
-                int padPx = (int) (18 * density);
-                cardInner.setPadding(padPx, padPx, padPx, padPx);
+                int innerPad = (int) (16 * density);
+                cardInner.setPadding(innerPad, innerPad, innerPad, innerPad);
 
                 TextView tvHeading = new TextView(this);
                 tvHeading.setText(pName);
@@ -359,7 +379,6 @@ public class MainActivity extends AppCompatActivity {
                 tvDates.setPadding(0, 0, 0, (int) (12 * density));
                 cardInner.addView(tvDates);
 
-                // Rounded Table Wrapper Container
                 LinearLayout tableContainer = new LinearLayout(this);
                 tableContainer.setOrientation(LinearLayout.VERTICAL);
                 GradientDrawable containerBg = new GradientDrawable();
@@ -371,10 +390,12 @@ public class MainActivity extends AppCompatActivity {
                 tableContainer.setClipToOutline(true);
 
                 TableLayout table = new TableLayout(this);
-                table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                table.setLayoutParams(new TableLayout.LayoutParams(
+                    TableLayout.LayoutParams.MATCH_PARENT, 
+                    TableLayout.LayoutParams.WRAP_CONTENT
+                ));
                 table.setStretchAllColumns(true);
 
-                // Header Row (5 Columns: Size | Type | Qty | Rate | Amount)
                 TableRow headerRow = new TableRow(this);
                 headerRow.setBackgroundColor(Color.parseColor("#E0F2FE"));
                 headerRow.setPadding(0, (int) (12 * density), 0, (int) (12 * density));
@@ -411,7 +432,6 @@ public class MainActivity extends AppCompatActivity {
                     table.addView(row);
                 }
 
-                // Total Footer Row
                 TableRow totalRow = new TableRow(this);
                 totalRow.setBackgroundColor(Color.parseColor("#DCFCE7"));
                 totalRow.setPadding(0, (int) (12 * density), 0, (int) (12 * density));
@@ -424,15 +444,40 @@ public class MainActivity extends AppCompatActivity {
 
                 tableContainer.addView(table);
                 cardInner.addView(tableContainer);
+                card.addView(cardInner); // Fixed: was previously missing
                 layoutHistoryBoxes.addView(card);
             } catch(Exception e) { e.printStackTrace(); }
         }
 
-        builder.setTitle("Paid Orders History");
-        builder.setView(scrollView);
-        builder.setPositiveButton("Close", (d, which) -> d.dismiss());
+        if(!hasPaidOrders) {
+            TextView tvEmpty = new TextView(this);
+            tvEmpty.setText("No Paid Orders Yet");
+            tvEmpty.setTextSize(15f);
+            tvEmpty.setGravity(Gravity.CENTER);
+            tvEmpty.setTextColor(Color.parseColor("#94A3B8"));
+            tvEmpty.setPadding(0, (int) (40 * density), 0, (int) (40 * density));
+            layoutHistoryBoxes.addView(tvEmpty);
+        }
+
+        MaterialButton btnClose = new MaterialButton(this);
+        btnClose.setText("Close");
+        btnClose.setTextColor(Color.WHITE);
+        btnClose.setTextSize(14f);
+        btnClose.setCornerRadius((int) (12 * density));
+        btnClose.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#4F46E5")));
+        LinearLayout.LayoutParams btnLp = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, 
+            (int) (48 * density)
+        );
+        btnLp.setMargins(0, (int) (12 * density), 0, 0);
+        btnClose.setLayoutParams(btnLp);
+        dialogRoot.addView(btnClose);
+
+        builder.setView(dialogRoot);
         AlertDialog dialog = builder.create();
         dialogHolder[0] = dialog;
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+
         if(dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
@@ -935,7 +980,6 @@ public class MainActivity extends AppCompatActivity {
         float cardRadiusPx = 24f * density;
         float tableRadiusPx = 18f * density;
 
-        // Newest First: Iterate backwards from orderList.size() - 1 down to 0
         for(int index = orderList.size() - 1; index >= 0; index--) {
             final int oIndex = index;
             try {
@@ -957,7 +1001,6 @@ public class MainActivity extends AppCompatActivity {
                 lp.setMargins(0, 0, 0, (int) (16 * density));
                 card.setLayoutParams(lp);
 
-                // Long-Press Listener for Home Screen Order Box
                 card.setOnLongClickListener(v -> {
                     showHomeOrderOptionsDialog(order);
                     return true;
@@ -987,7 +1030,6 @@ public class MainActivity extends AppCompatActivity {
                 headerLayout.addView(tvDate);
                 cardInner.addView(headerLayout);
 
-                // Rounded Table Wrapper Container
                 LinearLayout tableContainer = new LinearLayout(this);
                 tableContainer.setOrientation(LinearLayout.VERTICAL);
                 GradientDrawable containerBg = new GradientDrawable();
@@ -998,12 +1040,10 @@ public class MainActivity extends AppCompatActivity {
                 tableContainer.setBackground(containerBg);
                 tableContainer.setClipToOutline(true);
 
-                // Table Layout
                 TableLayout table = new TableLayout(this);
                 table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 table.setStretchAllColumns(true);
 
-                // Header Row (5 Columns: Size | Type | Qty | Rate | Amount)
                 TableRow headerRow = new TableRow(this);
                 headerRow.setBackgroundColor(Color.parseColor("#E0F2FE"));
                 headerRow.setPadding(0, (int) (12 * density), 0, (int) (12 * density));
@@ -1043,7 +1083,6 @@ public class MainActivity extends AppCompatActivity {
                 grandTotalQty += totalQty;
                 grandTotalAmount += totalAmount;
 
-                // Total Footer Row (Light Green Background, column-aligned)
                 TableRow totalRow = new TableRow(this);
                 totalRow.setBackgroundColor(Color.parseColor("#DCFCE7"));
                 totalRow.setPadding(0, (int) (12 * density), 0, (int) (12 * density));
