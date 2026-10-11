@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // Curved Rounded Menu Popup for the Three Dots
     private void showAppMenuDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LinearLayout layout = new LinearLayout(this);
@@ -170,7 +169,6 @@ public class MainActivity extends AppCompatActivity {
         EditText etSmallTo = view.findViewById(R.id.etSmallTo);
         ArrayList<EditText> dialogSizeList = new ArrayList<>();
 
-        // Helper to add a square numeric box
         Runnable addSizeRow = () -> {
             EditText et = new EditText(this);
             int boxSizePx = (int) (50 * getResources().getDisplayMetrics().density);
@@ -185,15 +183,12 @@ public class MainActivity extends AppCompatActivity {
             et.setBackgroundResource(R.drawable.bg_square_box);
             et.setPadding(0, 0, 0, 0);
             et.setSingleLine(true);
-            
-            // STRICTLY NUMBER INPUT ONLY
             et.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
             et.setImeOptions(EditorInfo.IME_ACTION_NEXT);
 
             dialogSizeList.add(et);
             layoutSizeRows.addView(et);
 
-            // Handle Enter button to move to next box or next section
             et.setOnEditorActionListener((v, actionId, event) -> {
                 boolean isEnter = (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN);
                 if (actionId == EditorInfo.IME_ACTION_NEXT || isEnter) {
@@ -209,14 +204,12 @@ public class MainActivity extends AppCompatActivity {
             });
         };
 
-        // Add 3 default numeric boxes
         for(int i = 0; i < 3; i++) {
             addSizeRow.run();
         }
 
         view.findViewById(R.id.btnAddSize).setOnClickListener(v -> addSizeRow.run());
 
-        // Product Name: Pressing Enter moves to first size box
         etProductName.setOnEditorActionListener((v, actionId, event) -> {
             boolean isEnter = (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN);
             if (actionId == EditorInfo.IME_ACTION_NEXT || isEnter) {
@@ -230,7 +223,6 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
 
-        // Range Section: Sequential Enter navigation
         etBigFrom.setOnEditorActionListener((v, actionId, event) -> {
             boolean isEnter = (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN);
             if (actionId == EditorInfo.IME_ACTION_NEXT || isEnter) {
@@ -792,29 +784,14 @@ public class MainActivity extends AppCompatActivity {
                     double rate = type.equals("Big") ? bigRate : smallRate;
                     int currentQty = currentQtyMap.containsKey(size) ? currentQtyMap.get(size) : 0;
 
-                    LinearLayout row = new LinearLayout(this);
-                    row.setOrientation(LinearLayout.HORIZONTAL);
-                    row.setPadding(0, (int) (6 * density), 0, (int) (6 * density));
-                    row.setGravity(Gravity.CENTER_VERTICAL);
+                    View row = getLayoutInflater().inflate(R.layout.item_order_input, contentLayout, false);
+                    TextView tv = row.findViewById(R.id.tvSizeLabel);
+                    EditText et = row.findViewById(R.id.etQty);
 
-                    TextView tv = new TextView(this);
                     tv.setText("Size: " + size + " (" + type + ") - Rate: " + rate);
-                    tv.setTextColor(Color.parseColor("#334155"));
-                    tv.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-
-                    EditText et = new EditText(this);
-                    et.setHint("Qty");
-                    et.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-                    et.setPadding((int) (12 * density), (int) (10 * density), (int) (12 * density), (int) (10 * density));
-                    et.setBackgroundResource(R.drawable.bg_rounded_edittext);
                     if(currentQty > 0) et.setText(String.valueOf(currentQty));
                     et.setTag(size + "|" + type + "|" + rate);
 
-                    int heightPx = (int) (48 * density);
-                    et.setLayoutParams(new LinearLayout.LayoutParams((int) (90 * density), heightPx));
-
-                    row.addView(tv);
-                    row.addView(et);
                     contentLayout.addView(row);
                 }
             }
@@ -827,29 +804,14 @@ public class MainActivity extends AppCompatActivity {
                 double rate = item.optDouble("rate", 0);
                 int currentQty = item.optInt("qty", 0);
 
-                LinearLayout row = new LinearLayout(this);
-                row.setOrientation(LinearLayout.HORIZONTAL);
-                row.setPadding(0, (int) (6 * density), 0, (int) (6 * density));
-                row.setGravity(Gravity.CENTER_VERTICAL);
+                View row = getLayoutInflater().inflate(R.layout.item_order_input, contentLayout, false);
+                TextView tv = row.findViewById(R.id.tvSizeLabel);
+                EditText et = row.findViewById(R.id.etQty);
 
-                TextView tv = new TextView(this);
                 tv.setText("Size: " + size + " (" + type + ") - Rate: " + rate);
-                tv.setTextColor(Color.parseColor("#334155"));
-                tv.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-
-                EditText et = new EditText(this);
-                et.setHint("Qty");
-                et.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-                et.setPadding((int) (12 * density), (int) (10 * density), (int) (12 * density), (int) (10 * density));
-                et.setBackgroundResource(R.drawable.bg_rounded_edittext);
                 if(currentQty > 0) et.setText(String.valueOf(currentQty));
                 et.setTag(size + "|" + type + "|" + rate);
 
-                int heightPx = (int) (48 * density);
-                et.setLayoutParams(new LinearLayout.LayoutParams((int) (90 * density), heightPx));
-
-                row.addView(tv);
-                row.addView(et);
                 contentLayout.addView(row);
             }
         }
@@ -875,11 +837,10 @@ public class MainActivity extends AppCompatActivity {
         btnSave.setOnClickListener(v -> {
             try {
                 JSONArray newItems = new JSONArray();
-                for(int i = 1; i < contentLayout.getChildCount() - 1; i++) {
+                for(int i = 0; i < contentLayout.getChildCount(); i++) {
                     View child = contentLayout.getChildAt(i);
-                    if(child instanceof LinearLayout) {
-                        LinearLayout r = (LinearLayout) child;
-                        EditText et = (EditText) r.getChildAt(1);
+                    EditText et = child.findViewById(R.id.etQty);
+                    if(et != null) {
                         String qStr = et.getText().toString().trim();
                         int qty = qStr.isEmpty() ? 0 : Integer.parseInt(qStr);
                         if(qty > 0) {
@@ -950,28 +911,13 @@ public class MainActivity extends AppCompatActivity {
                 String type = getSizeType(size, bigFrom, bigTo, smallFrom, smallTo);
                 double rate = type.equals("Big") ? bigRate : smallRate;
 
-                LinearLayout row = new LinearLayout(this);
-                row.setOrientation(LinearLayout.HORIZONTAL);
-                row.setPadding(0, 6, 0, 6);
-                row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                View row = getLayoutInflater().inflate(R.layout.item_order_input, layoutOrderInputs, false);
+                TextView tv = row.findViewById(R.id.tvSizeLabel);
+                EditText et = row.findViewById(R.id.etQty);
 
-                TextView tv = new TextView(this);
                 tv.setText("Size: " + size + " (" + type + ") - Rate: " + rate);
-                tv.setTextColor(Color.parseColor("#334155"));
-                tv.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-
-                EditText et = new EditText(this);
-                et.setHint("Qty");
-                et.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-                et.setPadding(12, 10, 12, 10);
-                et.setBackgroundResource(R.drawable.bg_rounded_edittext);
                 et.setTag(size + "|" + type + "|" + rate);
-                
-                int heightPx = (int) (48 * getResources().getDisplayMetrics().density);
-                et.setLayoutParams(new LinearLayout.LayoutParams(220, heightPx));
 
-                row.addView(tv);
-                row.addView(et);
                 layoutOrderInputs.addView(row);
             }
         } catch(Exception e) { e.printStackTrace(); }
@@ -1005,8 +951,10 @@ public class MainActivity extends AppCompatActivity {
 
             JSONArray items = new JSONArray();
             for(int i = 0; i < layoutOrderInputs.getChildCount(); i++) {
-                LinearLayout row = (LinearLayout) layoutOrderInputs.getChildAt(i);
-                EditText et = (EditText) row.getChildAt(1);
+                View row = layoutOrderInputs.getChildAt(i);
+                EditText et = row.findViewById(R.id.etQty);
+                if(et == null) continue;
+
                 String qStr = et.getText().toString().trim();
                 int qty = qStr.isEmpty() ? 0 : Integer.parseInt(qStr);
                 
