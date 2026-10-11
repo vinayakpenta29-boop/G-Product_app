@@ -232,9 +232,11 @@ public class MainActivity extends AppCompatActivity {
         float cardRadiusPx = 24f * density;
         float tableRadiusPx = 18f * density;
 
+        AlertDialog[] dialogHolder = new AlertDialog[1];
+
         for(int index = 0; index < orderList.size(); index++) {
             try {
-                JSONObject order = orderList.get(index);
+                final JSONObject order = orderList.get(index);
                 boolean isPaid = order.optBoolean("isPaid", false);
                 if(!isPaid) continue;
 
@@ -252,6 +254,12 @@ public class MainActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 lp.setMargins(0, 0, 0, (int) (16 * density));
                 card.setLayoutParams(lp);
+
+                // Long Press Listener for History Table
+                card.setOnLongClickListener(v -> {
+                    showHistoryOrderOptionsDialog(order, dialogHolder[0]);
+                    return true;
+                });
 
                 LinearLayout cardInner = new LinearLayout(this);
                 cardInner.setOrientation(LinearLayout.VERTICAL);
@@ -345,11 +353,276 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setTitle("Paid Orders History");
         builder.setView(scrollView);
-        builder.setPositiveButton("Close", (dialog, which) -> dialog.dismiss());
+        builder.setPositiveButton("Close", (d, which) -> d.dismiss());
+        AlertDialog dialog = builder.create();
+        dialogHolder[0] = dialog;
+        if(dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+        dialog.show();
+    }
+
+    private void showHistoryOrderOptionsDialog(JSONObject order, AlertDialog historyDialog) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        float density = getResources().getDisplayMetrics().density;
+        int pad = (int) (24 * density);
+        layout.setPadding(pad, pad, pad, pad);
+        layout.setBackgroundResource(R.drawable.bg_dialog_rounded);
+
+        TextView tvTitle = new TextView(this);
+        tvTitle.setText(order.optString("productName", "Order") + " - Payment Status");
+        tvTitle.setTextSize(16f);
+        tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+        tvTitle.setTextColor(Color.parseColor("#1E293B"));
+        tvTitle.setPadding(0, 0, 0, (int) (16 * density));
+        layout.addView(tvTitle);
+
+        CheckBox cb = new CheckBox(this);
+        cb.setText("Mark as Paid");
+        cb.setChecked(true); // Checked by default in History
+        cb.setTextColor(COLOR_GREEN);
+        cb.setTextSize(15f);
+        cb.setTypeface(null, android.graphics.Typeface.BOLD);
+        layout.addView(cb);
+
+        builder.setView(layout);
+        AlertDialog statusDialog = builder.create();
+        if(statusDialog.getWindow() != null) {
+            statusDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        cb.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(!isChecked) {
+                try {
+                    order.put("isPaid", false);
+                    order.put("paidDate", "");
+                    saveDataToStorage();
+                    Toast.makeText(this, "Order moved back to Home Screen!", Toast.LENGTH_SHORT).show();
+                    statusDialog.dismiss();
+                    if(historyDialog != null && historyDialog.isShowing()) {
+                        historyDialog.dismiss();
+                    }
+                    renderSavedOrders();
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        statusDialog.show();
+    }
+
+    private void showHomeOrderOptionsDialog(JSONObject order) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        String pName = order.optString("productName", "Order");
+        builder.setTitle(pName + " Options");
+        String[] options = {"Edit Order Box", "Delete Order Box"};
+        builder.setItems(options, (dialog, which) -> {
+            if (which == 0) {
+                showEditOrderDialog(order);
+            } else if (which == 1) {
+                confirmDeleteOrder(order);
+            }
+        });
+        builder.show();
+    }
+
+    private void confirmDeleteOrder(JSONObject order) {
+        new AlertDialog.Builder(this)
+            .setTitle("Delete Order Box")
+            .setMessage("Are you sure you want to delete this order box?")
+            .setPositiveButton("Delete", (dialog, which) -> {
+                orderList.remove(order);
+                saveDataToStorage();
+                renderSavedOrders();
+                Toast.makeText(this, "Order Box Deleted", Toast.LENGTH_SHORT).show();
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
+    }
+
+    private void showEditOrderDialog(JSONObject order) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        ScrollView scrollView = new ScrollView(this);
+        scrollView.setBackgroundResource(R.drawable.bg_dialog_rounded);
+        
+        LinearLayout contentLayout = new LinearLayout(this);
+        contentLayout.setOrientation(LinearLayout.VERTICAL);
+        float density = getResources().getDisplayMetrics().density;
+        int padPx = (int) (20 * density);
+        contentLayout.setPadding(padPx, padPx, padPx, padPx);
+        scrollView.addView(contentLayout);
+
+        String pName = order.optString("productName", "");
+        TextView tvTitle = new TextView(this);
+        tvTitle.setText("Edit Order - " + pName);
+        tvTitle.setTextSize(17f);
+        tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+        tvTitle.setTextColor(Color.parseColor("#4F46E5"));
+        tvTitle.setPadding(0, 0, 0, (int) (16 * density));
+        contentLayout.addView(tvTitle);
+
+        // Find product config to load sizes
+        JSONObject product = null;
+        for(JSONObject p : productList) {
+            if(p.optString("name", "").equals(pName)) {
+                product = p;
+                break;
+            }
+        }
+
+        // Existing quantities map
+        HashMap<String, Integer> currentQtyMap = new HashMap<>();
+        JSONArray oldItems = order.optJSONArray("items");
+        if(oldItems != null) {
+            for(int i = 0; i < oldItems.length(); i++) {
+                JSONObject item = oldItems.optJSONObject(i);
+                if(item != null) {
+                    currentQtyMap.put(item.optString("size"), item.optInt("qty", 0));
+                }
+            }
+        }
+
+        if(product != null) {
+            JSONArray sizes = product.optJSONArray("sizes");
+            String bigFrom = product.optString("bigFrom", "");
+            String bigTo = product.optString("bigTo", "");
+            String smallFrom = product.optString("smallFrom", "");
+            String smallTo = product.optString("smallTo", "");
+
+            JSONObject rates = ratesMap.get(pName);
+            double bigRate = 0, smallRate = 0;
+            if(rates != null) {
+                String bStr = rates.optString("big", "0");
+                String sStr = rates.optString("small", "0");
+                bigRate = bStr.isEmpty() ? 0 : Double.parseDouble(bStr);
+                smallRate = sStr.isEmpty() ? 0 : Double.parseDouble(sStr);
+            }
+
+            if(sizes != null) {
+                for(int i = 0; i < sizes.length(); i++) {
+                    String size = sizes.optString(i);
+                    String type = getSizeType(size, bigFrom, bigTo, smallFrom, smallTo);
+                    double rate = type.equals("Big") ? bigRate : smallRate;
+                    int currentQty = currentQtyMap.containsKey(size) ? currentQtyMap.get(size) : 0;
+
+                    LinearLayout row = new LinearLayout(this);
+                    row.setOrientation(LinearLayout.HORIZONTAL);
+                    row.setPadding(0, (int) (6 * density), 0, (int) (6 * density));
+                    row.setGravity(Gravity.CENTER_VERTICAL);
+
+                    TextView tv = new TextView(this);
+                    tv.setText("Size: " + size + " (" + type + ") - Rate: " + rate);
+                    tv.setTextColor(Color.parseColor("#334155"));
+                    tv.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+
+                    EditText et = new EditText(this);
+                    et.setHint("Qty");
+                    et.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+                    et.setPadding((int) (12 * density), (int) (10 * density), (int) (12 * density), (int) (10 * density));
+                    et.setBackgroundResource(R.drawable.bg_rounded_edittext);
+                    if(currentQty > 0) et.setText(String.valueOf(currentQty));
+                    et.setTag(size + "|" + type + "|" + rate);
+
+                    int heightPx = (int) (48 * density);
+                    et.setLayoutParams(new LinearLayout.LayoutParams((int) (90 * density), heightPx));
+
+                    row.addView(tv);
+                    row.addView(et);
+                    contentLayout.addView(row);
+                }
+            }
+        } else if(oldItems != null) {
+            for(int i = 0; i < oldItems.length(); i++) {
+                JSONObject item = oldItems.optJSONObject(i);
+                if(item == null) continue;
+                String size = item.optString("size");
+                String type = item.optString("type");
+                double rate = item.optDouble("rate", 0);
+                int currentQty = item.optInt("qty", 0);
+
+                LinearLayout row = new LinearLayout(this);
+                row.setOrientation(LinearLayout.HORIZONTAL);
+                row.setPadding(0, (int) (6 * density), 0, (int) (6 * density));
+                row.setGravity(Gravity.CENTER_VERTICAL);
+
+                TextView tv = new TextView(this);
+                tv.setText("Size: " + size + " (" + type + ") - Rate: " + rate);
+                tv.setTextColor(Color.parseColor("#334155"));
+                tv.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+
+                EditText et = new EditText(this);
+                et.setHint("Qty");
+                et.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+                et.setPadding((int) (12 * density), (int) (10 * density), (int) (12 * density), (int) (10 * density));
+                et.setBackgroundResource(R.drawable.bg_rounded_edittext);
+                if(currentQty > 0) et.setText(String.valueOf(currentQty));
+                et.setTag(size + "|" + type + "|" + rate);
+
+                int heightPx = (int) (48 * density);
+                et.setLayoutParams(new LinearLayout.LayoutParams((int) (90 * density), heightPx));
+
+                row.addView(tv);
+                row.addView(et);
+                contentLayout.addView(row);
+            }
+        }
+
+        Button btnSave = new Button(this);
+        btnSave.setText("Update Order Box");
+        btnSave.setTextColor(Color.WHITE);
+        btnSave.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#4F46E5")));
+        LinearLayout.LayoutParams btnLp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) (50 * density));
+        btnLp.setMargins(0, (int) (18 * density), 0, 0);
+        btnSave.setLayoutParams(btnLp);
+        contentLayout.addView(btnSave);
+
+        builder.setView(scrollView);
         AlertDialog dialog = builder.create();
         if(dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
+
+        btnSave.setOnClickListener(v -> {
+            try {
+                JSONArray newItems = new JSONArray();
+                for(int i = 1; i < contentLayout.getChildCount() - 1; i++) {
+                    View child = contentLayout.getChildAt(i);
+                    if(child instanceof LinearLayout) {
+                        LinearLayout r = (LinearLayout) child;
+                        EditText et = (EditText) r.getChildAt(1);
+                        String qStr = et.getText().toString().trim();
+                        int qty = qStr.isEmpty() ? 0 : Integer.parseInt(qStr);
+                        if(qty > 0) {
+                            String tag = et.getTag().toString();
+                            String[] parts = tag.split("\\|");
+                            JSONObject itm = new JSONObject();
+                            itm.put("size", parts[0]);
+                            itm.put("type", parts[1]);
+                            itm.put("qty", qty);
+                            itm.put("rate", Double.parseDouble(parts[2]));
+                            newItems.put(itm);
+                        }
+                    }
+                }
+
+                if(newItems.length() == 0) {
+                    Toast.makeText(this, "Quantity must be greater than 0 for at least one size", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                order.put("items", newItems);
+                saveDataToStorage();
+                renderSavedOrders();
+                Toast.makeText(this, "Order Updated Successfully!", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        });
+
         dialog.show();
     }
 
@@ -502,7 +775,7 @@ public class MainActivity extends AppCompatActivity {
         for(int index = 0; index < orderList.size(); index++) {
             final int oIndex = index;
             try {
-                JSONObject order = orderList.get(oIndex);
+                final JSONObject order = orderList.get(oIndex);
                 boolean isPaid = order.optBoolean("isPaid", false);
                 if(isPaid) continue;
 
@@ -519,6 +792,12 @@ public class MainActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 lp.setMargins(0, 0, 0, (int) (16 * density));
                 card.setLayoutParams(lp);
+
+                // Long-Press Listener for Home Screen Order Box
+                card.setOnLongClickListener(v -> {
+                    showHomeOrderOptionsDialog(order);
+                    return true;
+                });
 
                 LinearLayout cardInner = new LinearLayout(this);
                 cardInner.setOrientation(LinearLayout.VERTICAL);
