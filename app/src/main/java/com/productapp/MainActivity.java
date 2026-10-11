@@ -75,18 +75,82 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.menu_product) {
-            showProductConfigDialog();
-            return true;
-        } else if (id == R.id.menu_rates) {
-            showProductRatesDialog();
-            return true;
-        } else if (id == R.id.menu_history) {
-            showHistoryDialog();
+        if (item.getItemId() == R.id.menu_overflow) {
+            showAppMenuDialog();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    // Curved Rounded Menu Popup for the Three Dots
+    private void showAppMenuDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        float density = getResources().getDisplayMetrics().density;
+        int pad = (int) (22 * density);
+        layout.setPadding(pad, pad, pad, pad);
+        layout.setBackgroundResource(R.drawable.bg_dialog_rounded);
+
+        TextView tvTitle = new TextView(this);
+        tvTitle.setText("Product Manager Menu");
+        tvTitle.setTextSize(17f);
+        tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+        tvTitle.setTextColor(Color.parseColor("#4F46E5"));
+        tvTitle.setPadding(0, 0, 0, (int) (14 * density));
+        layout.addView(tvTitle);
+
+        builder.setView(layout);
+        AlertDialog dialog = builder.create();
+        if(dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        // Option 1: Add Product & Sizes
+        layout.addView(createMenuItem("Add Product & Sizes", () -> {
+            dialog.dismiss();
+            showProductConfigDialog();
+        }));
+
+        layout.addView(createMenuDivider());
+
+        // Option 2: Product Rates
+        layout.addView(createMenuItem("Product Rates", () -> {
+            dialog.dismiss();
+            showProductRatesDialog();
+        }));
+
+        layout.addView(createMenuDivider());
+
+        // Option 3: History
+        layout.addView(createMenuItem("Paid Orders History", () -> {
+            dialog.dismiss();
+            showHistoryDialog();
+        }));
+
+        dialog.show();
+    }
+
+    private View createMenuItem(String text, Runnable action) {
+        TextView tv = new TextView(this);
+        tv.setText(text);
+        tv.setTextSize(15f);
+        tv.setTypeface(null, android.graphics.Typeface.BOLD);
+        tv.setTextColor(Color.parseColor("#1E293B")); // Dark, high contrast text
+        float density = getResources().getDisplayMetrics().density;
+        tv.setPadding((int) (8 * density), (int) (12 * density), (int) (8 * density), (int) (12 * density));
+        tv.setOnClickListener(v -> action.run());
+        return tv;
+    }
+
+    private View createMenuDivider() {
+        View line = new View(this);
+        line.setBackgroundColor(Color.parseColor("#F1F5F9"));
+        float density = getResources().getDisplayMetrics().density;
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) (1 * density));
+        lp.setMargins(0, (int) (2 * density), 0, (int) (2 * density));
+        line.setLayoutParams(lp);
+        return line;
     }
 
     private void showProductConfigDialog() {
@@ -106,20 +170,30 @@ public class MainActivity extends AppCompatActivity {
         EditText etSmallTo = view.findViewById(R.id.etSmallTo);
         ArrayList<EditText> dialogSizeList = new ArrayList<>();
 
+        // Helper to add a square OTP-style box
         Runnable addSizeRow = () -> {
             EditText et = new EditText(this);
-            int heightPx = (int) (48 * getResources().getDisplayMetrics().density);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, heightPx);
-            lp.setMargins(0, 0, 0, 8);
+            int boxSizePx = (int) (50 * getResources().getDisplayMetrics().density);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(boxSizePx, boxSizePx);
+            lp.setMargins(0, 0, (int) (8 * getResources().getDisplayMetrics().density), 0);
             et.setLayoutParams(lp);
-            et.setHint("Enter Size (e.g. S, M, L)");
-            et.setPadding(12, 0, 12, 0);
-            et.setBackgroundResource(R.drawable.bg_rounded_edittext);
+            et.setGravity(Gravity.CENTER);
+            et.setHint("-");
+            et.setTextSize(16f);
+            et.setTypeface(null, android.graphics.Typeface.BOLD);
+            et.setTextColor(Color.parseColor("#1E293B"));
+            et.setBackgroundResource(R.drawable.bg_square_box);
+            et.setPadding(0, 0, 0, 0);
+            et.setSingleLine(true);
             layoutSizeRows.addView(et);
             dialogSizeList.add(et);
         };
 
-        addSizeRow.run();
+        // Add 3 clean OTP-style square boxes by default
+        for(int i = 0; i < 3; i++) {
+            addSizeRow.run();
+        }
+
         view.findViewById(R.id.btnAddSize).setOnClickListener(v -> addSizeRow.run());
 
         view.findViewById(R.id.btnSaveProduct).setOnClickListener(v -> {
@@ -131,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                     if(!s.isEmpty()) sizesArr.put(s);
                 }
                 if(name.isEmpty() || sizesArr.length() == 0) {
-                    Toast.makeText(this, "Enter name and sizes", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Enter name and at least one size", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 JSONObject obj = new JSONObject();
@@ -163,6 +237,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Spinner spinnerRateProduct = view.findViewById(R.id.spinnerRateProduct);
+        spinnerRateProduct.setPopupBackgroundResource(R.drawable.bg_spinner_popup);
+
         TextView tvBigLabel = view.findViewById(R.id.tvBigRateLabel);
         TextView tvSmallLabel = view.findViewById(R.id.tvSmallRateLabel);
         EditText etBigRate = view.findViewById(R.id.etBigRate);
@@ -348,7 +424,6 @@ public class MainActivity extends AppCompatActivity {
 
                 tableContainer.addView(table);
                 cardInner.addView(tableContainer);
-                card.addView(cardInner);
                 layoutHistoryBoxes.addView(card);
             } catch(Exception e) { e.printStackTrace(); }
         }
@@ -416,7 +491,6 @@ public class MainActivity extends AppCompatActivity {
         statusDialog.show();
     }
 
-    // Curved Rounded Pop-up for Home Order Options
     private void showHomeOrderOptionsDialog(JSONObject order) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LinearLayout layout = new LinearLayout(this);
@@ -468,7 +542,6 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    // Curved Rounded Pop-up for Delete Order Confirmation
     private void confirmDeleteOrder(JSONObject order) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LinearLayout layout = new LinearLayout(this);
@@ -657,7 +730,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // Rounded "UPDATE ORDER BOX" MaterialButton
         MaterialButton btnSave = new MaterialButton(this);
         btnSave.setText("UPDATE ORDER BOX");
         btnSave.setTextColor(Color.WHITE);
