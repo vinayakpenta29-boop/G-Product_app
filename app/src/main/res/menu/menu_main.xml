@@ -2,15 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_product"
-        android:title="Product"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/menu_rates"
-        android:title="Product Rates"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/menu_history"
-        android:title="History"
-        app:showAsAction="never" />
+        android:id="@+id/menu_overflow"
+        android:title="Menu"
+        android:icon="@drawable/ic_more_vert"
+        app:showAsAction="always" />
 </menu>
