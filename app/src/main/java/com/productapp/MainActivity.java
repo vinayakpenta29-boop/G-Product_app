@@ -6,9 +6,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -167,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
         EditText etSmallTo = view.findViewById(R.id.etSmallTo);
         ArrayList<EditText> dialogSizeList = new ArrayList<>();
 
+        // Helper to add a square numeric box
         Runnable addSizeRow = () -> {
             EditText et = new EditText(this);
             int boxSizePx = (int) (50 * getResources().getDisplayMetrics().density);
@@ -181,15 +185,91 @@ public class MainActivity extends AppCompatActivity {
             et.setBackgroundResource(R.drawable.bg_square_box);
             et.setPadding(0, 0, 0, 0);
             et.setSingleLine(true);
-            layoutSizeRows.addView(et);
+            
+            // STRICTLY NUMBER INPUT ONLY
+            et.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+            et.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+
             dialogSizeList.add(et);
+            layoutSizeRows.addView(et);
+
+            // Handle Enter button to move to next box or next section
+            et.setOnEditorActionListener((v, actionId, event) -> {
+                boolean isEnter = (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN);
+                if (actionId == EditorInfo.IME_ACTION_NEXT || isEnter) {
+                    int nextIndex = dialogSizeList.indexOf(et) + 1;
+                    if (nextIndex < dialogSizeList.size()) {
+                        dialogSizeList.get(nextIndex).requestFocus();
+                    } else {
+                        etBigFrom.requestFocus();
+                    }
+                    return true;
+                }
+                return false;
+            });
         };
 
+        // Add 3 default numeric boxes
         for(int i = 0; i < 3; i++) {
             addSizeRow.run();
         }
 
         view.findViewById(R.id.btnAddSize).setOnClickListener(v -> addSizeRow.run());
+
+        // Product Name: Pressing Enter moves to first size box
+        etProductName.setOnEditorActionListener((v, actionId, event) -> {
+            boolean isEnter = (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN);
+            if (actionId == EditorInfo.IME_ACTION_NEXT || isEnter) {
+                if (!dialogSizeList.isEmpty()) {
+                    dialogSizeList.get(0).requestFocus();
+                } else {
+                    etBigFrom.requestFocus();
+                }
+                return true;
+            }
+            return false;
+        });
+
+        // Range Section: Sequential Enter navigation
+        etBigFrom.setOnEditorActionListener((v, actionId, event) -> {
+            boolean isEnter = (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN);
+            if (actionId == EditorInfo.IME_ACTION_NEXT || isEnter) {
+                etBigTo.requestFocus();
+                return true;
+            }
+            return false;
+        });
+
+        etBigTo.setOnEditorActionListener((v, actionId, event) -> {
+            boolean isEnter = (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN);
+            if (actionId == EditorInfo.IME_ACTION_NEXT || isEnter) {
+                etSmallFrom.requestFocus();
+                return true;
+            }
+            return false;
+        });
+
+        etSmallFrom.setOnEditorActionListener((v, actionId, event) -> {
+            boolean isEnter = (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN);
+            if (actionId == EditorInfo.IME_ACTION_NEXT || isEnter) {
+                etSmallTo.requestFocus();
+                return true;
+            }
+            return false;
+        });
+
+        etSmallTo.setOnEditorActionListener((v, actionId, event) -> {
+            boolean isEnter = (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN);
+            if (actionId == EditorInfo.IME_ACTION_DONE || isEnter) {
+                etSmallTo.clearFocus();
+                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(etSmallTo.getWindowToken(), 0);
+                }
+                return true;
+            }
+            return false;
+        });
 
         view.findViewById(R.id.btnSaveProduct).setOnClickListener(v -> {
             try {
@@ -292,7 +372,6 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    // FIXED: Properly wraps content in a solid rounded card with empty state handling
     private void showHistoryDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         float density = getResources().getDisplayMetrics().density;
@@ -444,7 +523,7 @@ public class MainActivity extends AppCompatActivity {
 
                 tableContainer.addView(table);
                 cardInner.addView(tableContainer);
-                card.addView(cardInner); // Fixed: was previously missing
+                card.addView(cardInner);
                 layoutHistoryBoxes.addView(card);
             } catch(Exception e) { e.printStackTrace(); }
         }
