@@ -47,15 +47,27 @@
             android:textStyle="bold"
             android:textColor="#334155"
             android:layout_marginBottom="6dp"/>
-        <EditText
-            android:id="@+id/etBigRate"
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:inputType="numberDecimal"
-            android:hint="Enter Big rate"
-            android:paddingHorizontal="12dp"
-            android:background="@drawable/bg_rounded_edittext"
-            android:layout_marginBottom="16dp"/>
+            android:layout_height="wrap_content"
+            android:hint="Enter Big Rate"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="@color/box_stroke_selector"
+            app:hintTextColor="@color/box_hint_selector"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etBigRate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:singleLine="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/tvSmallRateLabel"
@@ -66,15 +78,27 @@
             android:textStyle="bold"
             android:textColor="#334155"
             android:layout_marginBottom="6dp"/>
-        <EditText
-            android:id="@+id/etSmallRate"
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:inputType="numberDecimal"
-            android:hint="Enter Small rate"
-            android:paddingHorizontal="12dp"
-            android:background="@drawable/bg_rounded_edittext"
-            android:layout_marginBottom="24dp"/>
+            android:layout_height="wrap_content"
+            android:hint="Enter Small Rate"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxStrokeColor="@color/box_stroke_selector"
+            app:hintTextColor="@color/box_hint_selector"
+            android:layout_marginBottom="24dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSmallRate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:singleLine="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/btnSaveRates"
