@@ -34,13 +34,17 @@
             android:layout_height="50dp"
             android:hint="Enter Product Name"
             android:paddingHorizontal="12dp"
+            android:inputType="textCapWords"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:imeOptions="actionNext"
             android:background="@drawable/bg_rounded_edittext"
             android:layout_marginBottom="16dp"/>
 
         <TextView 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Product Sizes" 
+            android:text="Product Sizes (Numbers Only)" 
             android:textSize="13sp"
             android:textStyle="bold" 
             android:textColor="#334155"
@@ -104,6 +108,9 @@
                 android:layout_height="48dp"
                 android:layout_weight="1"
                 android:hint="Size From"
+                android:inputType="number"
+                android:singleLine="true"
+                android:imeOptions="actionNext"
                 android:paddingHorizontal="12dp"
                 android:background="@drawable/bg_rounded_edittext"
                 android:layout_marginRight="8dp"/>
@@ -113,6 +120,9 @@
                 android:layout_height="48dp"
                 android:layout_weight="1"
                 android:hint="Size To"
+                android:inputType="number"
+                android:singleLine="true"
+                android:imeOptions="actionNext"
                 android:paddingHorizontal="12dp"
                 android:background="@drawable/bg_rounded_edittext"/>
         </LinearLayout>
@@ -136,6 +146,9 @@
                 android:layout_height="48dp"
                 android:layout_weight="1"
                 android:hint="Size From"
+                android:inputType="number"
+                android:singleLine="true"
+                android:imeOptions="actionNext"
                 android:paddingHorizontal="12dp"
                 android:background="@drawable/bg_rounded_edittext"
                 android:layout_marginRight="8dp"/>
@@ -145,6 +158,9 @@
                 android:layout_height="48dp"
                 android:layout_weight="1"
                 android:hint="Size To"
+                android:inputType="number"
+                android:singleLine="true"
+                android:imeOptions="actionDone"
                 android:paddingHorizontal="12dp"
                 android:background="@drawable/bg_rounded_edittext"/>
         </LinearLayout>
