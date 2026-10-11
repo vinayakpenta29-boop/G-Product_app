@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private HashMap<String, JSONObject> ratesMap = new HashMap<>();
     private ArrayList<JSONObject> orderList = new ArrayList<>();
 
+    private final int COLOR_GREEN = Color.parseColor("#059669");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -241,7 +243,6 @@ public class MainActivity extends AppCompatActivity {
                 String paidDate = order.optString("paidDate", "");
                 JSONArray items = order.getJSONArray("items");
 
-                // Prominently rounded outer card
                 MaterialCardView card = new MaterialCardView(this);
                 card.setRadius(cardRadiusPx);
                 card.setCardElevation(4f * density);
@@ -261,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
                 tvHeading.setText(pName);
                 tvHeading.setTextSize(16);
                 tvHeading.setTypeface(null, android.graphics.Typeface.BOLD);
-                tvHeading.setTextColor(Color.parseColor("#059669"));
+                tvHeading.setTextColor(COLOR_GREEN);
                 tvHeading.setPadding(0, 0, 0, 2);
                 cardInner.addView(tvHeading);
 
@@ -272,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
                 tvDates.setPadding(0, 0, 0, (int) (12 * density));
                 cardInner.addView(tvDates);
 
-                // Prominently rounded table container
+                // Rounded Table Wrapper Container
                 LinearLayout tableContainer = new LinearLayout(this);
                 tableContainer.setOrientation(LinearLayout.VERTICAL);
                 GradientDrawable containerBg = new GradientDrawable();
@@ -287,13 +288,14 @@ public class MainActivity extends AppCompatActivity {
                 table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 table.setStretchAllColumns(true);
 
-                // Header Row
+                // Header Row (5 Columns: Size | Type | Qty | Rate | Amount)
                 TableRow headerRow = new TableRow(this);
                 headerRow.setBackgroundColor(Color.parseColor("#E0F2FE"));
                 headerRow.setPadding(0, (int) (12 * density), 0, (int) (12 * density));
                 headerRow.addView(makeTableCell("Size", true, false));
                 headerRow.addView(makeTableCell("Type", true, false));
                 headerRow.addView(makeTableCell("Qty", true, false));
+                headerRow.addView(makeTableCell("Rate", true, false));
                 headerRow.addView(makeTableCell("Amount", true, false));
                 table.addView(headerRow);
 
@@ -318,18 +320,20 @@ public class MainActivity extends AppCompatActivity {
                     row.addView(makeTableCell(size, false, false));
                     row.addView(makeTableCell(type, false, false));
                     row.addView(makeTableCell(String.valueOf(qty), false, false));
+                    row.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", rate), false, false, COLOR_GREEN));
                     row.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", amount), false, false));
                     table.addView(row);
                 }
 
-                // Total Footer Row (Light Green Background)
+                // Total Footer Row
                 TableRow totalRow = new TableRow(this);
                 totalRow.setBackgroundColor(Color.parseColor("#DCFCE7"));
                 totalRow.setPadding(0, (int) (12 * density), 0, (int) (12 * density));
                 totalRow.addView(makeTableCell("Total", false, true));
                 totalRow.addView(makeTableCell("", false, true));
                 totalRow.addView(makeTableCell(String.valueOf(totalQty), false, true));
-                totalRow.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", totalAmount), false, true));
+                totalRow.addView(makeTableCell("", false, true));
+                totalRow.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", totalAmount), false, true, COLOR_GREEN));
                 table.addView(totalRow);
 
                 tableContainer.addView(table);
@@ -506,7 +510,6 @@ public class MainActivity extends AppCompatActivity {
                 String date = order.optString("date", "");
                 JSONArray items = order.getJSONArray("items");
 
-                // Prominently rounded outer card
                 MaterialCardView card = new MaterialCardView(this);
                 card.setRadius(cardRadiusPx);
                 card.setCardElevation(4f * density);
@@ -541,7 +544,7 @@ public class MainActivity extends AppCompatActivity {
                 headerLayout.addView(tvDate);
                 cardInner.addView(headerLayout);
 
-                // Prominently rounded table container
+                // Rounded Table Wrapper Container
                 LinearLayout tableContainer = new LinearLayout(this);
                 tableContainer.setOrientation(LinearLayout.VERTICAL);
                 GradientDrawable containerBg = new GradientDrawable();
@@ -557,13 +560,14 @@ public class MainActivity extends AppCompatActivity {
                 table.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 table.setStretchAllColumns(true);
 
-                // Header Row
+                // Header Row (5 Columns: Size | Type | Qty | Rate | Amount)
                 TableRow headerRow = new TableRow(this);
                 headerRow.setBackgroundColor(Color.parseColor("#E0F2FE"));
                 headerRow.setPadding(0, (int) (12 * density), 0, (int) (12 * density));
                 headerRow.addView(makeTableCell("Size", true, false));
                 headerRow.addView(makeTableCell("Type", true, false));
                 headerRow.addView(makeTableCell("Qty", true, false));
+                headerRow.addView(makeTableCell("Rate", true, false));
                 headerRow.addView(makeTableCell("Amount", true, false));
                 table.addView(headerRow);
 
@@ -588,6 +592,7 @@ public class MainActivity extends AppCompatActivity {
                     row.addView(makeTableCell(size, false, false));
                     row.addView(makeTableCell(type, false, false));
                     row.addView(makeTableCell(String.valueOf(qty), false, false));
+                    row.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", rate), false, false, COLOR_GREEN));
                     row.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", amount), false, false));
                     table.addView(row);
                 }
@@ -602,7 +607,8 @@ public class MainActivity extends AppCompatActivity {
                 totalRow.addView(makeTableCell("Total", false, true));
                 totalRow.addView(makeTableCell("", false, true));
                 totalRow.addView(makeTableCell(String.valueOf(totalQty), false, true));
-                totalRow.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", totalAmount), false, true));
+                totalRow.addView(makeTableCell("", false, true));
+                totalRow.addView(makeTableCell(String.format(Locale.getDefault(), "%.1f", totalAmount), false, true, COLOR_GREEN));
                 table.addView(totalRow);
 
                 tableContainer.addView(table);
@@ -610,7 +616,7 @@ public class MainActivity extends AppCompatActivity {
 
                 CheckBox cbPaid = new CheckBox(this);
                 cbPaid.setText("Mark as Paid");
-                cbPaid.setTextColor(Color.parseColor("#059669"));
+                cbPaid.setTextColor(COLOR_GREEN);
                 cbPaid.setTypeface(null, android.graphics.Typeface.BOLD);
                 cbPaid.setPadding(0, (int) (8 * density), 0, 0);
                 cbPaid.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -639,6 +645,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private TextView makeTableCell(String text, boolean isHeader, boolean isTotal) {
+        return makeTableCell(text, isHeader, isTotal, null);
+    }
+
+    private TextView makeTableCell(String text, boolean isHeader, boolean isTotal, Integer textColor) {
         TextView tv = new TextView(this);
         tv.setText(text);
         int padH = (int) (12 * getResources().getDisplayMetrics().density);
@@ -647,15 +657,15 @@ public class MainActivity extends AppCompatActivity {
         tv.setGravity(Gravity.CENTER);
         
         if(isHeader) {
-            tv.setTextColor(Color.parseColor("#1E293B"));
+            tv.setTextColor(textColor != null ? textColor : Color.parseColor("#1E293B"));
             tv.setTypeface(null, android.graphics.Typeface.BOLD);
             tv.setTextSize(15f);
         } else if(isTotal) {
-            tv.setTextColor(Color.parseColor("#0F172A"));
+            tv.setTextColor(textColor != null ? textColor : Color.parseColor("#0F172A"));
             tv.setTypeface(null, android.graphics.Typeface.BOLD);
             tv.setTextSize(14f);
         } else {
-            tv.setTextColor(Color.parseColor("#334155"));
+            tv.setTextColor(textColor != null ? textColor : Color.parseColor("#334155"));
             tv.setTextSize(14f);
         }
         return tv;
